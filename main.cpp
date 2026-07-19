@@ -1,6 +1,7 @@
 #include "widgets/mainwindow.h"
 
 #include <QApplication>
+#include <QSqlDatabase>
 
 int main(int argc, char *argv[])
 {

@@ -10,12 +10,19 @@ INCLUDEPATH += $$PWD/src
 
 SOURCES += \
     main.cpp \
+    src/core/connectioninfo.cpp \
+    src/core/databaseconnection.cpp \
+    src/widgets/dialogConnectionSettings.cpp \
     src/widgets/mainwindow.cpp
 
 HEADERS += \
+    src/core/connectioninfo.h \
+    src/core/databaseconnection.h \
+    src/widgets/dialogConnectionSettings.h \
     src/widgets/mainwindow.h
 
 FORMS += \
+    src/widgets/dialogConnectionSettings.ui \
     src/widgets/mainwindow.ui
 
 # Default rules for deployment.
