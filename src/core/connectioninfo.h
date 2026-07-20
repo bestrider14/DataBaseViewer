@@ -6,14 +6,14 @@
 class ConnectionInfo
 {
 public:
-    ConnectionInfo(QString p_engine, QString p_hostIp, QString p_port, QString p_database, QString p_username, QString p_password);
+    ConnectionInfo(const QString& p_engine, const QString& p_hostIp, const QString& p_port, const QString& p_database, const QString& p_username, const QString& p_password);
 
-    QString GetEngine()     const;
-    QString GetHost()       const;
-    QString GetPort()       const;
-    QString GetDatabase()   const;
-    QString GetUsername()   const;
-    QString GetPassword()   const;
+    const QString& getEngine()     const;
+    const QString& getHost()       const;
+    const QString& getPort()       const;
+    const QString& getDatabase()   const;
+    const QString& getUsername()   const;
+    const QString& getPassword()   const;
 
 private:
     QString m_engine;

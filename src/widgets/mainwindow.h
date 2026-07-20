@@ -18,7 +18,7 @@ public:
     ~MainWindow() override;
 
 private slots:
-    void OnConnectionSettingsClicked();
+    void onConnectionSettingsClicked();
 
 private:
     Ui::MainWindow *ui;

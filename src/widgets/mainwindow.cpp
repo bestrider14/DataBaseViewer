@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    connect(ui->connectionSettingsBtn, &QPushButton::clicked, this, &MainWindow::OnConnectionSettingsClicked);
+    connect(ui->connectionSettingsBtn, &QPushButton::clicked, this, &MainWindow::onConnectionSettingsClicked);
 }
 
 MainWindow::~MainWindow()
@@ -16,13 +16,13 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::OnConnectionSettingsClicked()
+void MainWindow::onConnectionSettingsClicked()
 {
     DialogConnectionsSettings dialog(this);
 
     if (dialog.exec() == QDialog::Accepted)
     {
-        ConnectionInfo connectionInfo = dialog.GetConnectionInfo();
+        ConnectionInfo connectionInfo = dialog.getConnectionInfo();
     }
 }
 

@@ -2,7 +2,16 @@
 #include <QHash>
 #include <QSqlDatabase>
 
-DatabaseConnection::DatabaseConnection() {}
+DatabaseConnection::DatabaseConnection(ConnectionInfo connectionInfo) :
+    m_engine(connectionInfo.getEngine()),
+    m_host(connectionInfo.getHost()),
+    m_port(connectionInfo.getPort()),
+    m_database(connectionInfo.getDatabase()),
+    m_username(connectionInfo.getUsername()),
+    m_password(connectionInfo.getPassword())
+{
+
+}
 
 QString DatabaseConnection::displayName(const QString &driver)
 {

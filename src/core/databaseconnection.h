@@ -3,13 +3,23 @@
 
 #include <QString>
 
+#include "connectioninfo.h"
+
 class DatabaseConnection
 {
 public:
-    DatabaseConnection();
+    DatabaseConnection(ConnectionInfo connectionInfo);
 
     static QString displayName(const QString &driver);   // "QPSQL" -> "PostgreSQL"
     static QStringList supportedDrivers();
+
+private:
+    QString m_engine;
+    QString m_host;
+    QString m_port;
+    QString m_database;
+    QString m_username;
+    QString m_password;
 };
 
 #endif // DATABASECONNECTION_H

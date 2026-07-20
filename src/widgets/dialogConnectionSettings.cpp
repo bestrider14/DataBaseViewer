@@ -1,9 +1,9 @@
 #include <QString>
 #include <QDebug>
 #include <QLineEdit>
+#include <QPushButton>
 
 #include "dialogConnectionSettings.h"
-#include "qpushbutton.h"
 #include "ui_dialogConnectionSettings.h"
 #include "core/databaseconnection.h"
 
@@ -21,13 +21,15 @@ DialogConnectionsSettings::DialogConnectionsSettings(QWidget *parent)
         ui->engineCombo->addItem(DatabaseConnection::displayName(driver),driver);
     }
 
-    connect(ui->engineCombo, &QComboBox::currentIndexChanged, this, &DialogConnectionsSettings::OnEngineComboChanged);
+    onEngineComboChanged();
 
-    connect(ui->hostIpEdit,   &QLineEdit::textEdited, this, &DialogConnectionsSettings::OnEdit);
-    connect(ui->hostPortEdit, &QLineEdit::textEdited, this, &DialogConnectionsSettings::OnEdit);
-    connect(ui->databaseEdit, &QLineEdit::textEdited, this, &DialogConnectionsSettings::OnEdit);
-    connect(ui->usernameEdit, &QLineEdit::textEdited, this, &DialogConnectionsSettings::OnEdit);
-    connect(ui->passwordEdit, &QLineEdit::textEdited, this, &DialogConnectionsSettings::OnEdit);
+    connect(ui->engineCombo, &QComboBox::currentIndexChanged, this, &DialogConnectionsSettings::onEngineComboChanged);
+
+    connect(ui->hostIpEdit,   &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
+    connect(ui->hostPortEdit, &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
+    connect(ui->databaseEdit, &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
+    connect(ui->usernameEdit, &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
+    connect(ui->passwordEdit, &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
 
 }
 
@@ -36,7 +38,7 @@ DialogConnectionsSettings::~DialogConnectionsSettings()
     delete ui;
 }
 
-ConnectionInfo DialogConnectionsSettings::GetConnectionInfo()
+ConnectionInfo DialogConnectionsSettings::getConnectionInfo() const
 {
     ConnectionInfo connectionInfo(ui->engineCombo->currentData().toString(),
                                   ui->hostIpEdit->text(),
@@ -45,10 +47,11 @@ ConnectionInfo DialogConnectionsSettings::GetConnectionInfo()
                                   ui->usernameEdit->text(),
                                   ui->passwordEdit->text());
 
+
     return connectionInfo;
 }
 
-void DialogConnectionsSettings::OnEngineComboChanged()
+void DialogConnectionsSettings::onEngineComboChanged()
 {
     QString currentData = ui->engineCombo->currentData().toString();
 
@@ -63,14 +66,14 @@ void DialogConnectionsSettings::OnEngineComboChanged()
         ui->hostPortEdit->setDisabled(false);
     }
 
-    OnEdit();
+    onEdit();
 }
 
-void DialogConnectionsSettings::OnEdit()
+void DialogConnectionsSettings::onEdit()
 {
-    if( ui->databaseEdit->text() == "" ||
-        ui->usernameEdit->text() == "" ||
-        ui->passwordEdit->text() == "")
+    if( ui->databaseEdit->text().isEmpty() ||
+        ui->usernameEdit->text().isEmpty() ||
+        ui->passwordEdit->text().isEmpty())
     {
         setOkButtonEnable(false);
         return;
@@ -78,7 +81,7 @@ void DialogConnectionsSettings::OnEdit()
 
     if(ui->engineCombo->currentData().toString() != "QSQLITE")
     {
-        if( ui->hostIpEdit->text() == "" || ui->hostPortEdit->text() == "")
+        if( ui->hostIpEdit->text().isEmpty() || ui->hostPortEdit->text().isEmpty())
         {
             setOkButtonEnable(false);
             return;

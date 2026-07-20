@@ -17,11 +17,11 @@ public:
     explicit DialogConnectionsSettings(QWidget *parent = nullptr);
     ~DialogConnectionsSettings();
 
-    ConnectionInfo GetConnectionInfo();
+    ConnectionInfo getConnectionInfo() const;
 
 private slots:
-    void OnEngineComboChanged();
-    void OnEdit();
+    void onEngineComboChanged();
+    void onEdit();
 
 private:
     Ui::DialogConnectionsSettings *ui;
