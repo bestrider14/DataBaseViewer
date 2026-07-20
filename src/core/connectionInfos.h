@@ -1,5 +1,5 @@
-#ifndef CONNECTIONINFO_H
-#define CONNECTIONINFO_H
+#ifndef CONNECTIONINFOS_H
+#define CONNECTIONINFOS_H
 
 #include <QString>
 
@@ -24,4 +24,4 @@ private:
     QString m_password;
 };
 
-#endif // CONNECTIONINFO_H
+#endif // CONNECTIONINFOS_H

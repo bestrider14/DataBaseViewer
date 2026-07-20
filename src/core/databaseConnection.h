@@ -3,7 +3,7 @@
 
 #include <QString>
 
-#include "connectioninfo.h"
+#include "connectionInfos.h"
 
 class DatabaseConnection
 {

@@ -1,4 +1,4 @@
-#include "databaseconnection.h"
+#include "databaseConnection.h"
 #include <QHash>
 #include <QSqlDatabase>
 

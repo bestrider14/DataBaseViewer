@@ -1,7 +1,7 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "mainWindow.h"
+#include "ui_mainWindow.h"
 #include "dialogConnectionSettings.h"
-#include "core/connectioninfo.h"
+#include "core/connectionInfos.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)

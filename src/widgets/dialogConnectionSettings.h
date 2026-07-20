@@ -3,7 +3,7 @@
 
 #include <QDialog>
 
-#include "core/connectioninfo.h"
+#include "core/connectionInfos.h"
 
 namespace Ui {
 class DialogConnectionsSettings;

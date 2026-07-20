@@ -10,20 +10,20 @@ INCLUDEPATH += $$PWD/src
 
 SOURCES += \
     main.cpp \
-    src/core/connectioninfo.cpp \
-    src/core/databaseconnection.cpp \
+    src/core/connectionInfos.cpp \
+    src/core/databaseConnection.cpp \
     src/widgets/dialogConnectionSettings.cpp \
-    src/widgets/mainwindow.cpp
+    src/widgets/mainWindow.cpp
 
 HEADERS += \
-    src/core/connectioninfo.h \
-    src/core/databaseconnection.h \
+    src/core/connectionInfos.h \
+    src/core/databaseConnection.h \
     src/widgets/dialogConnectionSettings.h \
-    src/widgets/mainwindow.h
+    src/widgets/mainWindow.h
 
 FORMS += \
     src/widgets/dialogConnectionSettings.ui \
-    src/widgets/mainwindow.ui
+    src/widgets/mainWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -5,7 +5,7 @@
 
 #include "dialogConnectionSettings.h"
 #include "ui_dialogConnectionSettings.h"
-#include "core/databaseconnection.h"
+#include "core/databaseConnection.h"
 
 
 DialogConnectionsSettings::DialogConnectionsSettings(QWidget *parent)
