@@ -16,7 +16,7 @@ public:
 private:
     QString m_engine;
     QString m_host;
-    QString m_port;
+    uint8_t m_port;
     QString m_database;
     QString m_username;
     QString m_password;

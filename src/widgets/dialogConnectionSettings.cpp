@@ -42,7 +42,7 @@ ConnectionInfo DialogConnectionsSettings::getConnectionInfo() const
 {
     ConnectionInfo connectionInfo(ui->engineCombo->currentData().toString(),
                                   ui->hostIpEdit->text(),
-                                  ui->hostPortEdit->text(),
+                                  ui->hostPortEdit->text().toInt(),
                                   ui->databaseEdit->text(),
                                   ui->usernameEdit->text(),
                                   ui->passwordEdit->text());

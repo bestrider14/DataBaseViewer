@@ -10,6 +10,13 @@ DatabaseConnection::DatabaseConnection(ConnectionInfo connectionInfo) :
     m_username(connectionInfo.getUsername()),
     m_password(connectionInfo.getPassword())
 {
+    QSqlDatabase db = QSqlDatabase::addDatabase(m_engine);
+
+    if(m_engine != "QSLITE")
+    {
+        db.setHostName(m_host);
+        db.setPort(m_port);
+    }
 
 }
 
