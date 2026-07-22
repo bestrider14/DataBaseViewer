@@ -1,7 +1,7 @@
 #include "databaseConnection.h"
 
 
-DatabaseConnection::DatabaseConnection(const ConnectionInfo p_connectionInfo) : m_connectionInfo(p_connectionInfo)
+DatabaseConnection::DatabaseConnection(const ConnectionInfo p_connectionInfo, QObject *p_parent) : QObject(p_parent), m_connectionInfo(p_connectionInfo)
 {
 }
 
@@ -20,13 +20,15 @@ void DatabaseConnection::connect()
     m_db->setPassword(m_connectionInfo->getPassword());
 
     if (!m_db->open()) {
-        qDebug() << "Server Connection Failed:" << m_db->lastError().text();
+        statusMessage("Server Connection Failed: " + m_db->lastError().text());
+        disconnected();
         return;
     }
-    qDebug() << "Successfully connected to MySQL!";
+    statusMessage("Server Connection Succeful");
+    connected();
 }
 
-QString DatabaseConnection::displayName(const QString &driver)
+QString DatabaseConnection::displayName(const QString &p_driver)
 {
     static const QHash<QString, QString> names = {
                                                     { "QPSQL",   "PostgreSQL" },
@@ -39,7 +41,7 @@ QString DatabaseConnection::displayName(const QString &driver)
                                                     { "QDB2", "IBM Db2" },
                                                    };
 
-    return names.value(driver, driver);  // fallback : le code brut si inconnu
+    return names.value(p_driver, p_driver);  // fallback : le code brut si inconnu
 }
 
 QStringList DatabaseConnection::supportedDrivers()
