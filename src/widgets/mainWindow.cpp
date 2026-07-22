@@ -1,14 +1,17 @@
 #include "mainWindow.h"
-#include "ui_mainWindow.h"
 #include "dialogConnectionSettings.h"
-#include "core/connectionInfos.h"
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    ui->connectBtn->setEnabled(false);
+
     connect(ui->connectionSettingsBtn, &QPushButton::clicked, this, &MainWindow::onConnectionSettingsClicked);
+    connect(ui->connectBtn, &QPushButton::clicked, this, &MainWindow::onConnectClicked);
 }
 
 MainWindow::~MainWindow()
@@ -22,7 +25,13 @@ void MainWindow::onConnectionSettingsClicked()
 
     if (dialog.exec() == QDialog::Accepted)
     {
-        ConnectionInfo connectionInfo = dialog.getConnectionInfo();
+        m_databaseConnection = DatabaseConnection(dialog.getConnectionInfo());
+        ui->connectBtn->setEnabled(m_databaseConnection.has_value());
     }
+}
+
+void MainWindow::onConnectClicked()
+{
+    m_databaseConnection->connect();
 }
 

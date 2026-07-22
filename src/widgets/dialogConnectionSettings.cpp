@@ -1,10 +1,4 @@
-#include <QString>
-#include <QDebug>
-#include <QLineEdit>
-#include <QPushButton>
-
 #include "dialogConnectionSettings.h"
-#include "ui_dialogConnectionSettings.h"
 #include "core/databaseConnection.h"
 
 
@@ -38,15 +32,14 @@ DialogConnectionsSettings::~DialogConnectionsSettings()
     delete ui;
 }
 
-ConnectionInfo DialogConnectionsSettings::getConnectionInfo() const
+const ConnectionInfo DialogConnectionsSettings::getConnectionInfo() const
 {
     ConnectionInfo connectionInfo(ui->engineCombo->currentData().toString(),
                                   ui->hostIpEdit->text(),
-                                  ui->hostPortEdit->text().toInt(),
+                                  ui->hostPortEdit->text().toUInt(),
                                   ui->databaseEdit->text(),
                                   ui->usernameEdit->text(),
                                   ui->passwordEdit->text());
-
 
     return connectionInfo;
 }

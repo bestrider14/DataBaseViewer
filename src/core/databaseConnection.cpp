@@ -1,23 +1,29 @@
 #include "databaseConnection.h"
-#include <QHash>
-#include <QSqlDatabase>
 
-DatabaseConnection::DatabaseConnection(ConnectionInfo connectionInfo) :
-    m_engine(connectionInfo.getEngine()),
-    m_host(connectionInfo.getHost()),
-    m_port(connectionInfo.getPort()),
-    m_database(connectionInfo.getDatabase()),
-    m_username(connectionInfo.getUsername()),
-    m_password(connectionInfo.getPassword())
+
+DatabaseConnection::DatabaseConnection(const ConnectionInfo p_connectionInfo) : m_connectionInfo(p_connectionInfo)
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase(m_engine);
+}
 
-    if(m_engine != "QSLITE")
+void DatabaseConnection::connect()
+{
+    m_db = QSqlDatabase::addDatabase(m_connectionInfo->getEngine());
+
+    if(m_connectionInfo->getEngine() != "QSQLITE")
     {
-        db.setHostName(m_host);
-        db.setPort(m_port);
+        m_db->setHostName(m_connectionInfo->getHost());
+        m_db->setPort(m_connectionInfo->getPort());
     }
 
+    m_db->setDatabaseName(m_connectionInfo->getDatabase());
+    m_db->setUserName(m_connectionInfo->getUsername());
+    m_db->setPassword(m_connectionInfo->getPassword());
+
+    if (!m_db->open()) {
+        qDebug() << "Server Connection Failed:" << m_db->lastError().text();
+        return;
+    }
+    qDebug() << "Successfully connected to MySQL!";
 }
 
 QString DatabaseConnection::displayName(const QString &driver)

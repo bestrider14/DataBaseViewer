@@ -3,6 +3,12 @@
 
 #include <QMainWindow>
 
+#include <optional>
+
+#include "core/databaseConnection.h"
+#include "ui_mainWindow.h"
+#include "dialogConnectionSettings.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -19,8 +25,10 @@ public:
 
 private slots:
     void onConnectionSettingsClicked();
+    void onConnectClicked();
 
 private:
     Ui::MainWindow *ui;
+    std::optional<DatabaseConnection> m_databaseConnection;
 };
 #endif // MAINWINDOW_H

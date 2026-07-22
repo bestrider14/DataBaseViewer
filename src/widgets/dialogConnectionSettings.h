@@ -2,8 +2,12 @@
 #define DIALOGCONNECTIONSETTINGS_H
 
 #include <QDialog>
+#include <QString>
+#include <QLineEdit>
+#include <QPushButton>
 
-#include "core/connectionInfos.h"
+#include "ui_dialogConnectionSettings.h"
+#include "core/connectionInfo.h"
 
 namespace Ui {
 class DialogConnectionsSettings;
@@ -17,7 +21,7 @@ public:
     explicit DialogConnectionsSettings(QWidget *parent = nullptr);
     ~DialogConnectionsSettings();
 
-    ConnectionInfo getConnectionInfo() const;
+    const ConnectionInfo getConnectionInfo() const;
 
 private slots:
     void onEngineComboChanged();

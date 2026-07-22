@@ -7,16 +7,16 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 INCLUDEPATH += $$PWD/src
-
+a
 SOURCES += \
     main.cpp \
-    src/core/connectionInfos.cpp \
+    src/core/connectionInfo.cpp \
     src/core/databaseConnection.cpp \
     src/widgets/dialogConnectionSettings.cpp \
     src/widgets/mainWindow.cpp
 
 HEADERS += \
-    src/core/connectionInfos.h \
+    src/core/connectionInfo.h \
     src/core/databaseConnection.h \
     src/widgets/dialogConnectionSettings.h \
     src/widgets/mainWindow.h

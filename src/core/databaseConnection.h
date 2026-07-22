@@ -2,24 +2,29 @@
 #define DATABASECONNECTION_H
 
 #include <QString>
+#include <QSqlDatabase>
+#include <QHash>
+#include <QSqlError>
+#include <QSqlQuery>
 
-#include "connectionInfos.h"
+#include <optional>
+
+#include "connectionInfo.h"
 
 class DatabaseConnection
 {
 public:
-    DatabaseConnection(ConnectionInfo connectionInfo);
+    DatabaseConnection(const ConnectionInfo connectionInfo);
 
     static QString displayName(const QString &driver);   // "QPSQL" -> "PostgreSQL"
     static QStringList supportedDrivers();
 
+    void connect();
+
 private:
-    QString m_engine;
-    QString m_host;
-    uint8_t m_port;
-    QString m_database;
-    QString m_username;
-    QString m_password;
+    std::optional<ConnectionInfo> m_connectionInfo;
+    std::optional<QSqlDatabase> m_db;
+
 };
 
 #endif // DATABASECONNECTION_H
