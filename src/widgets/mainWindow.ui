@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
-
  <widget class="QMainWindow" name="MainWindow">
-
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -12,66 +10,46 @@
     <height>700</height>
    </rect>
   </property>
-
   <property name="windowTitle">
    <string>Database Viewer</string>
   </property>
-
   <widget class="QWidget" name="centralwidget">
-
    <layout class="QVBoxLayout" name="verticalLayout">
-
-    <property name="leftMargin">
-     <number>10</number>
-    </property>
-
-    <property name="topMargin">
-     <number>10</number>
-    </property>
-
-    <property name="rightMargin">
-     <number>10</number>
-    </property>
-
-    <property name="bottomMargin">
-     <number>10</number>
-    </property>
-
     <property name="spacing">
      <number>10</number>
     </property>
-
-    <!-- Barre supérieure -->
-
+    <property name="leftMargin">
+     <number>10</number>
+    </property>
+    <property name="topMargin">
+     <number>10</number>
+    </property>
+    <property name="rightMargin">
+     <number>10</number>
+    </property>
+    <property name="bottomMargin">
+     <number>10</number>
+    </property>
     <item>
      <layout class="QHBoxLayout" name="toolbarLayout">
-
       <item>
        <widget class="QPushButton" name="connectBtn">
-        <property name="minimumWidth">
-         <number>110</number>
-        </property>
         <property name="text">
          <string>Connect</string>
         </property>
        </widget>
       </item>
-
       <item>
        <widget class="QPushButton" name="connectionSettingsBtn">
-        <property name="minimumWidth">
-         <number>180</number>
-        </property>
         <property name="text">
          <string>Connection Settings</string>
         </property>
        </widget>
       </item>
-
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -81,51 +59,37 @@
         </property>
        </spacer>
       </item>
-
      </layout>
     </item>
-
-    <!-- Zone principale -->
-
     <item>
-
      <widget class="QSplitter" name="splitter">
-
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
-
-      <widget class="QTreeWidget" name="treeWidget">
-
-       <property name="minimumWidth">
-        <number>250</number>
-       </property>
-
+      <widget class="QTreeWidget" name="tablesTree">
        <column>
         <property name="text">
          <string>Database Objects</string>
         </property>
        </column>
-
       </widget>
-
-      <widget class="QColumnView" name="columnView"/>
-
+      <widget class="QColumnView" name="tableContentView"/>
      </widget>
-
     </item>
-
    </layout>
-
   </widget>
-
-  <widget class="QMenuBar" name="menubar"/>
-
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1100</width>
+     <height>33</height>
+    </rect>
+   </property>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
-
  </widget>
-
  <resources/>
  <connections/>
-
 </ui>

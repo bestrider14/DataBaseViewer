@@ -4,8 +4,8 @@
 #include <QMainWindow>
 #include <QStatusBar>
 #include <QLabel>
+#include <QTreeView>
 
-#include <optional>
 
 #include "core/databaseConnection.h"
 #include "ui_mainWindow.h"
@@ -25,18 +25,22 @@ public:
     ~MainWindow() override;
 
 private:
-    void initDatabaseConnection(const ConnectionInfo& p_connectionInfo);
-    void stateChanged(const QString& p_newState);
+    void initDatabaseConnection(const ConnectionInfo &p_connectionInfo);
+    void stateChanged(const QString &p_newState);
+    void updateTablesTree(const QStringList &p_tableList);
 
 private slots:
     void onConnectionSettingsClicked();
     void onConnectClicked();
-    void receivedStatus(const QString& p_message, int p_timeout = 0);
+    void onDatabaseDisconnected();
+    void onDatabaseConnected();
+    void receivedStatus(const QString &p_message, int p_timeout = 0);
 
 private:
     Ui::MainWindow *ui;
-    std::optional<DatabaseConnection> m_databaseConnection;
+    std::unique_ptr<DatabaseConnection> m_databaseConnection;
 
+    bool isConnected = false;
     QLabel *state = new QLabel("Disconected");
 };
 #endif // MAINWINDOW_H

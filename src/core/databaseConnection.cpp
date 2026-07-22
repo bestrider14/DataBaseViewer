@@ -26,19 +26,36 @@ void DatabaseConnection::connect()
     }
     statusMessage("Server Connection Succeful");
     connected();
+    updateTablesList();
+}
+
+void DatabaseConnection::disconnect()
+{
+    m_db->close();
+    disconnected();
+}
+
+void DatabaseConnection::updateTablesList()
+{
+    tablesListUpdated(m_db->tables());
+}
+
+void DatabaseConnection::onItemClicked(QTreeWidgetItem *item, int column)
+{
+    qDebug() << item->text(0);
 }
 
 QString DatabaseConnection::displayName(const QString &p_driver)
 {
     static const QHash<QString, QString> names = {
-                                                    { "QPSQL",   "PostgreSQL" },
-                                                    { "QSQLITE", "SQLite"     },
-                                                    { "QMYSQL",  "MySQL / MariaDB" },
-                                                    { "QIBASE", "InterBase / Firebird" },
-                                                    { "QMIMER", "Mimer SQL" },
-                                                    { "QOCI",   "Oracle (OCI)" },
-                                                    { "QODBC",  "ODBC" },
-                                                    { "QDB2", "IBM Db2" },
+                                                    { "QPSQL",      "PostgreSQL" },
+                                                    { "QSQLITE",    "SQLite"     },
+                                                    { "QMYSQL",     "MySQL / MariaDB" },
+                                                    { "QIBASE",     "InterBase / Firebird" },
+                                                    { "QMIMER",     "Mimer SQL" },
+                                                    { "QOCI",       "Oracle (OCI)" },
+                                                    { "QODBC",      "ODBC" },
+                                                    { "QDB2",       "IBM Db2" },
                                                    };
 
     return names.value(p_driver, p_driver);  // fallback : le code brut si inconnu
