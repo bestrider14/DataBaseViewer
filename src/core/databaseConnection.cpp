@@ -1,29 +1,42 @@
 #include "databaseConnection.h"
 
 
-DatabaseConnection::DatabaseConnection(const ConnectionInfo p_connectionInfo, QObject *p_parent) : QObject(p_parent), m_connectionInfo(p_connectionInfo)
+DatabaseConnection::DatabaseConnection(const ConnectionInfo &p_connectionInfo, QObject *p_parent) : QObject(p_parent), m_connectionInfo(p_connectionInfo)
 {
 }
 
 void DatabaseConnection::connect()
 {
-    m_db = QSqlDatabase::addDatabase(m_connectionInfo->getEngine());
+    m_databaseConnectionName = generateUuid();
+    m_db = QSqlDatabase::addDatabase(m_connectionInfo.getEngine(), m_databaseConnectionName);
 
-    if(m_connectionInfo->getEngine() != "QSQLITE")
+    if(m_connectionInfo.getEngine() != "QSQLITE")
     {
-        m_db->setHostName(m_connectionInfo->getHost());
-        m_db->setPort(m_connectionInfo->getPort());
+        m_db.setHostName(m_connectionInfo.getHost());
+        m_db.setPort(m_connectionInfo.getPort());
     }
 
-    m_db->setDatabaseName(m_connectionInfo->getDatabase());
-    m_db->setUserName(m_connectionInfo->getUsername());
-    m_db->setPassword(m_connectionInfo->getPassword());
+    m_db.setDatabaseName(m_connectionInfo.getDatabase());
+    m_db.setUserName(m_connectionInfo.getUsername());
+    m_db.setPassword(m_connectionInfo.getPassword());
 
-    if (!m_db->open()) {
-        statusMessage("Server Connection Failed: " + m_db->lastError().text());
+    if (!m_db.open())
+    {
+        QMessageBox errorMessage;
+        errorMessage.setIcon(QMessageBox::Critical);
+        errorMessage.setText("Database Connection Failed");
+        errorMessage.setWindowTitle("Connection failed");
+        errorMessage.setInformativeText(m_db.lastError().text());
+        errorMessage.setStandardButtons(QMessageBox::Close);
+        errorMessage.setDefaultButton(QMessageBox::Close);
+        errorMessage.exec();
+
+        m_db.close();
+        m_db.removeDatabase(m_databaseConnectionName);
         disconnected();
         return;
     }
+
     statusMessage("Server Connection Succeful");
     connected();
     updateTablesList();
@@ -31,19 +44,28 @@ void DatabaseConnection::connect()
 
 void DatabaseConnection::disconnect()
 {
-    m_db->close();
+    m_db.close();
+    m_db.removeDatabase(m_databaseConnectionName);
     disconnected();
+}
+
+QSqlTableModel* DatabaseConnection::getTableData(const QString &p_tableName) const
+{
+    QSqlTableModel *model = new QSqlTableModel;
+    model->setTable(p_tableName);
+    // model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model->select();
+    //model->setHeaderData(0, Qt::Horizontal, tr("Name"));
+    //model->setHeaderData(1, Qt::Horizontal, tr("Salary"));
+
+    return model;
 }
 
 void DatabaseConnection::updateTablesList()
 {
-    tablesListUpdated(m_db->tables());
+    tablesListUpdated(m_db.tables());
 }
 
-void DatabaseConnection::onItemClicked(QTreeWidgetItem *item, int column)
-{
-    qDebug() << item->text(0);
-}
 
 QString DatabaseConnection::displayName(const QString &p_driver)
 {
@@ -64,4 +86,9 @@ QString DatabaseConnection::displayName(const QString &p_driver)
 QStringList DatabaseConnection::supportedDrivers()
 {
     return QSqlDatabase::drivers();
+}
+
+QString DatabaseConnection::generateUuid() const
+{
+    return QUuid::createUuid().toString(QUuid::WithoutBraces);
 }

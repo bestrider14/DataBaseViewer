@@ -25,16 +25,16 @@ MainWindow::~MainWindow()
 
  void MainWindow::initDatabaseConnection(const ConnectionInfo &p_connectionInfo)
 {
-    m_databaseConnection.emplace(p_connectionInfo);
+    m_databaseConnection = std::make_unique<DatabaseConnection>(p_connectionInfo);
 
-    ui->connectBtn->setEnabled(m_databaseConnection.has_value());
+    ui->connectBtn->setEnabled(true);
 
-    connect(&m_databaseConnection.value(), &DatabaseConnection::statusMessage, this, &MainWindow::receivedStatus);
-    connect(&m_databaseConnection.value(), &DatabaseConnection::connected, this, &MainWindow::onDatabaseConnected);
-    connect(&m_databaseConnection.value(), &DatabaseConnection::disconnected, this, &MainWindow::onDatabaseDisconnected);
-    connect(&m_databaseConnection.value(), &DatabaseConnection::tablesListUpdated, this, &MainWindow::updateTablesTree);
+    connect(m_databaseConnection.get(), &DatabaseConnection::statusMessage, this, &MainWindow::receivedStatus);
+    connect(m_databaseConnection.get(), &DatabaseConnection::connected, this, &MainWindow::onDatabaseConnected);
+    connect(m_databaseConnection.get(), &DatabaseConnection::disconnected, this, &MainWindow::onDatabaseDisconnected);
+    connect(m_databaseConnection.get(), &DatabaseConnection::tablesListUpdated, this, &MainWindow::updateTablesTree);
 
-    connect(ui->tablesTree, &QTreeWidget::itemClicked, &m_databaseConnection.value(), &DatabaseConnection::onItemClicked);
+    connect(ui->tablesTree, &QTreeWidget::itemClicked, this, &MainWindow::requestTableData);
 
 }
 
@@ -46,6 +46,13 @@ void MainWindow::updateTablesTree(const QStringList &p_tableList)
         item->setText(0, table);
         ui->tablesTree->addTopLevelItem(item);
     }
+}
+
+void MainWindow::requestTableData(const QTreeWidgetItem *p_item)
+{
+    QSqlTableModel *model = m_databaseConnection->getTableData(p_item->text(0));
+    ui->tableContentView->setModel(model);
+    ui->tableContentView->show();
 }
 
 void MainWindow::stateChanged(const QString &p_newState)
@@ -70,7 +77,7 @@ void MainWindow::onConnectionSettingsClicked()
 
 void MainWindow::onConnectClicked()
 {
-    if(!isConnected)
+    if(!m_isConnected)
     {
         m_databaseConnection->connect();
     }
@@ -83,13 +90,17 @@ void MainWindow::onConnectClicked()
 void MainWindow::onDatabaseDisconnected()
 {
     ui->tablesTree->clear();
-    isConnected = false;
+    m_isConnected = false;
     ui->connectBtn->setText("Connect");
+    ui->connectionSettingsBtn->setEnabled(true);
+    stateChanged("Disconnected");
 }
 
 void MainWindow::onDatabaseConnected()
 {
-    isConnected = true;
+    m_isConnected = true;
     ui->connectBtn->setText("Disconnect");
+    ui->connectionSettingsBtn->setEnabled(false);
+    stateChanged("Connected");
 }
 

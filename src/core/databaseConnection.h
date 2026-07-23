@@ -5,11 +5,10 @@
 #include <QSqlDatabase>
 #include <QHash>
 #include <QSqlError>
-#include <QSqlQuery>
+#include <QSqlTableModel>
 #include <QErrorMessage>
-#include <QTreeWidgetItem>
-
-#include <optional>
+#include <QUuid>
+#include <QMessageBox>
 
 #include "connectionInfo.h"
 
@@ -25,12 +24,11 @@ public:
 
     void connect();
     void disconnect();
+    QSqlTableModel* getTableData(const QString &p_tableName) const;
 
 private:
     void updateTablesList();
-
-public slots:
-    void onItemClicked(QTreeWidgetItem *item, int column);
+    QString generateUuid() const;
 
 signals:
     void statusMessage(const QString &p_message, int p_timeout = 5000) const;
@@ -40,7 +38,9 @@ signals:
 
 private:
     ConnectionInfo m_connectionInfo;
-    std::unique_ptr<QSqlDatabase> m_db;
+    QSqlDatabase m_db;
+
+    QString m_databaseConnectionName;
 
 };
 

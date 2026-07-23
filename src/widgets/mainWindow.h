@@ -5,7 +5,8 @@
 #include <QStatusBar>
 #include <QLabel>
 #include <QTreeView>
-
+#include <QTreeWidgetItem>
+#include <QSqlTableModel>
 
 #include "core/databaseConnection.h"
 #include "ui_mainWindow.h"
@@ -28,6 +29,7 @@ private:
     void initDatabaseConnection(const ConnectionInfo &p_connectionInfo);
     void stateChanged(const QString &p_newState);
     void updateTablesTree(const QStringList &p_tableList);
+    void requestTableData(const QTreeWidgetItem *p_item);
 
 private slots:
     void onConnectionSettingsClicked();
@@ -40,7 +42,7 @@ private:
     Ui::MainWindow *ui;
     std::unique_ptr<DatabaseConnection> m_databaseConnection;
 
-    bool isConnected = false;
-    QLabel *state = new QLabel("Disconected");
+    bool m_isConnected = false;
+    QLabel *state = new QLabel("Disconnected");
 };
 #endif // MAINWINDOW_H
