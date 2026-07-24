@@ -31,32 +31,28 @@ void DatabaseConnection::connect()
         errorMessage.setDefaultButton(QMessageBox::Close);
         errorMessage.exec();
 
-        m_db.close();
-        m_db.removeDatabase(m_databaseConnectionName);
-        disconnected();
+        disconnect();
         return;
     }
 
     statusMessage("Server Connection Succeful");
-    connected();
+    emit connected();
     updateTablesList();
 }
 
 void DatabaseConnection::disconnect()
 {
     m_db.close();
+    m_db = QSqlDatabase();
     m_db.removeDatabase(m_databaseConnectionName);
-    disconnected();
+    emit disconnected();
 }
 
 QSqlTableModel* DatabaseConnection::getTableData(const QString &p_tableName) const
 {
-    QSqlTableModel *model = new QSqlTableModel;
+    QSqlTableModel *model = new QSqlTableModel(nullptr, m_db);
     model->setTable(p_tableName);
-    // model->setEditStrategy(QSqlTableModel::OnManualSubmit);
     model->select();
-    //model->setHeaderData(0, Qt::Horizontal, tr("Name"));
-    //model->setHeaderData(1, Qt::Horizontal, tr("Salary"));
 
     return model;
 }

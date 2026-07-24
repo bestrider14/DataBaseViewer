@@ -15,12 +15,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->connectBtn, &QPushButton::clicked, this, &MainWindow::onConnectClicked);
 
 
-    statusBar()->addPermanentWidget(state,0);
+    statusBar()->addPermanentWidget(m_state,0);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete m_model;
 }
 
  void MainWindow::initDatabaseConnection(const ConnectionInfo &p_connectionInfo)
@@ -34,7 +35,8 @@ MainWindow::~MainWindow()
     connect(m_databaseConnection.get(), &DatabaseConnection::disconnected, this, &MainWindow::onDatabaseDisconnected);
     connect(m_databaseConnection.get(), &DatabaseConnection::tablesListUpdated, this, &MainWindow::updateTablesTree);
 
-    connect(ui->tablesTree, &QTreeWidget::itemClicked, this, &MainWindow::requestTableData);
+    connect(ui->tablesTree, &QTreeWidget::itemClicked, this, &MainWindow::onTreeItemClicked);
+    connect(this, &MainWindow::tableSelected, this, &MainWindow::onTableSelected);
 
 }
 
@@ -48,21 +50,27 @@ void MainWindow::updateTablesTree(const QStringList &p_tableList)
     }
 }
 
-void MainWindow::requestTableData(const QTreeWidgetItem *p_item)
+void MainWindow::onTableSelected(const QString &p_tableName)
 {
-    QSqlTableModel *model = m_databaseConnection->getTableData(p_item->text(0));
-    ui->tableContentView->setModel(model);
+    delete m_model;
+    m_model = m_databaseConnection->getTableData(p_tableName);
+    ui->tableContentView->setModel(m_model);
     ui->tableContentView->show();
 }
 
 void MainWindow::stateChanged(const QString &p_newState)
 {
-    state->setText(p_newState);
+    m_state->setText(p_newState);
 }
 
 void MainWindow::receivedStatus(const QString &p_message, int p_timeout)
 {
     statusBar()->showMessage(p_message, p_timeout);
+}
+
+void MainWindow::onTreeItemClicked(const QTreeWidgetItem *p_item)
+{
+    emit tableSelected(p_item->text(0));
 }
 
 void MainWindow::onConnectionSettingsClicked()

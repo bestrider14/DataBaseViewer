@@ -15,6 +15,14 @@ DialogConnectionsSettings::DialogConnectionsSettings(QWidget *parent)
         ui->engineCombo->addItem(DatabaseConnection::displayName(driver),driver);
     }
 
+    //DEV
+    ui->engineCombo->setCurrentIndex(5);
+    ui->hostIpEdit->setText("localhost");
+    ui->hostPortEdit->setText("5434");
+    ui->databaseEdit->setText("nextbay_dev");
+    ui->usernameEdit->setText("nextbay");
+    ui->passwordEdit->setText("nextbay");
+
     onEngineComboChanged();
 
     connect(ui->engineCombo, &QComboBox::currentIndexChanged, this, &DialogConnectionsSettings::onEngineComboChanged);

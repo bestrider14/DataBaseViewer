@@ -29,7 +29,9 @@ private:
     void initDatabaseConnection(const ConnectionInfo &p_connectionInfo);
     void stateChanged(const QString &p_newState);
     void updateTablesTree(const QStringList &p_tableList);
-    void requestTableData(const QTreeWidgetItem *p_item);
+
+signals:
+    void tableSelected(const QString &p_tableName);
 
 private slots:
     void onConnectionSettingsClicked();
@@ -38,11 +40,15 @@ private slots:
     void onDatabaseConnected();
     void receivedStatus(const QString &p_message, int p_timeout = 0);
 
+    void onTreeItemClicked(const QTreeWidgetItem *p_item);   // extrait le nom, émet tableSelected
+    void onTableSelected(const QString &p_tableName);         // récupère le modèle, met à jour la vue
+
 private:
     Ui::MainWindow *ui;
     std::unique_ptr<DatabaseConnection> m_databaseConnection;
 
     bool m_isConnected = false;
-    QLabel *state = new QLabel("Disconnected");
+    QLabel *m_state = new QLabel("Disconnected");
+    QSqlTableModel *m_model = nullptr;
 };
 #endif // MAINWINDOW_H

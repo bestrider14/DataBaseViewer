@@ -73,7 +73,7 @@
         </property>
        </column>
       </widget>
-      <widget class="QColumnView" name="tableContentView"/>
+      <widget class="QTableView" name="tableContentView"/>
      </widget>
     </item>
    </layout>
@@ -84,7 +84,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>33</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

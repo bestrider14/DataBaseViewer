@@ -6,7 +6,6 @@
 #include <QHash>
 #include <QSqlError>
 #include <QSqlTableModel>
-#include <QErrorMessage>
 #include <QUuid>
 #include <QMessageBox>
 
