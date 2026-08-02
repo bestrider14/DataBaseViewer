@@ -1,9 +1,7 @@
 #include "databaseConnection.h"
 
-
 DatabaseConnection::DatabaseConnection(const ConnectionInfo &p_connectionInfo, QObject *p_parent) : QObject(p_parent), m_connectionInfo(p_connectionInfo)
-{
-}
+{}
 
 void DatabaseConnection::connect()
 {
@@ -22,21 +20,14 @@ void DatabaseConnection::connect()
 
     if (!m_db.open())
     {
-        QMessageBox errorMessage;
-        errorMessage.setIcon(QMessageBox::Critical);
-        errorMessage.setText("Database Connection Failed");
-        errorMessage.setWindowTitle("Connection failed");
-        errorMessage.setInformativeText(m_db.lastError().text());
-        errorMessage.setStandardButtons(QMessageBox::Close);
-        errorMessage.setDefaultButton(QMessageBox::Close);
-        errorMessage.exec();
-
+        emit errorMessage("Connection failed", m_db.lastError().text());
         disconnect();
         return;
     }
 
-    statusMessage("Server Connection Succeful");
+    emit statusMessage("Server Connection Succeful");
     emit connected();
+
     updateTablesList();
 }
 
@@ -48,9 +39,9 @@ void DatabaseConnection::disconnect()
     emit disconnected();
 }
 
-QSqlTableModel* DatabaseConnection::getTableData(const QString &p_tableName) const
+CustomTableModel* DatabaseConnection::getTableData(const QString &p_tableName) const
 {
-    QSqlTableModel *model = new QSqlTableModel(nullptr, m_db);
+    CustomTableModel *model = new CustomTableModel(nullptr, m_db);
     model->setTable(p_tableName);
     model->select();
 
@@ -59,7 +50,7 @@ QSqlTableModel* DatabaseConnection::getTableData(const QString &p_tableName) con
 
 void DatabaseConnection::updateTablesList()
 {
-    tablesListUpdated(m_db.tables());
+    emit tablesListUpdated(m_db.tables());
 }
 
 

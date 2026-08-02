@@ -35,6 +35,28 @@ qmake DataBaseViewer.pro
 make        # ou mingw32-make / nmake selon la plateforme
 ```
 
+## Décisions de conception
+
+### Stratégie d'édition des tables (`QSqlTableModel::EditStrategy`)
+
+`TableDataWidget` utilise `QSqlTableModel::OnFieldChange` plutôt que `OnManualSubmit` ou
+`OnRowChange`.
+
+L'objectif de ce logiciel est d'explorer des données et de faire de petits ajustements
+ponctuels, pas de la saisie en lot. `OnFieldChange` persiste chaque cellule dès qu'on quitte
+le champ, ce qui colle le mieux à cet usage : pas d'étape "Enregistrer" à gérer ou à oublier.
+
+Le compromis accepté : pas de possibilité d'annuler une saisie une fois qu'elle est partie en
+base (pas de `revertAll()` utile après coup). Ça reste raisonnable pour l'instant, pour deux
+raisons :
+- usage prévu sur une base de dev, pas de prod ;
+- le schéma est censé contraindre lui-même les valeurs invalides (contraintes SQL), plutôt que
+  de compter sur une validation côté UI — d'où l'importance de bien afficher les erreurs de
+  contrainte remontées par la base plutôt que de les laisser échouer silencieusement.
+
+À revisiter si le logiciel évolue vers un usage plus intensif ou vers une base de prod (par
+exemple en ajoutant un choix de stratégie dans les options).
+
 ## État du projet
 
 Le projet est en cours de développement initial (voir la feuille de route ci-dessus). Aucune fonctionnalité de connexion ou d'affichage n'est encore implémentée.

@@ -11,9 +11,7 @@ DialogConnectionsSettings::DialogConnectionsSettings(QWidget *parent)
     setOkButtonEnable(false);
 
     for (const QString &driver : DatabaseConnection::supportedDrivers())
-    {
         ui->engineCombo->addItem(DatabaseConnection::displayName(driver),driver);
-    }
 
     //DEV
     ui->engineCombo->setCurrentIndex(5);

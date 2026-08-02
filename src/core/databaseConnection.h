@@ -5,10 +5,10 @@
 #include <QSqlDatabase>
 #include <QHash>
 #include <QSqlError>
-#include <QSqlTableModel>
 #include <QUuid>
 #include <QMessageBox>
 
+#include "core/customTableModel.h"
 #include "connectionInfo.h"
 
 class DatabaseConnection : public QObject
@@ -23,13 +23,14 @@ public:
 
     void connect();
     void disconnect();
-    QSqlTableModel* getTableData(const QString &p_tableName) const;
+    CustomTableModel* getTableData(const QString &p_tableName) const;
 
 private:
     void updateTablesList();
     QString generateUuid() const;
 
 signals:
+    void errorMessage(const QString &p_title, const QString &p_message);
     void statusMessage(const QString &p_message, int p_timeout = 5000) const;
     void connected(const QString &p_message = "Connected") const;
     void disconnected(const QString &p_message = "Disconnected") const;

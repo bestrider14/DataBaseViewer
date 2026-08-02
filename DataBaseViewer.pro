@@ -11,15 +11,23 @@ a
 SOURCES += \
     main.cpp \
     src/core/connectionInfo.cpp \
+    src/core/customTableModel.cpp \
     src/core/databaseConnection.cpp \
     src/widgets/dialogConnectionSettings.cpp \
-    src/widgets/mainWindow.cpp
+    src/widgets/mainWindow.cpp \
+    src/widgets/messageDialogBoxWidget.cpp \
+    src/widgets/tableDataWidget.cpp \
+    src/widgets/tableExplorerWidget.cpp
 
 HEADERS += \
     src/core/connectionInfo.h \
+    src/core/customTableModel.h \
     src/core/databaseConnection.h \
     src/widgets/dialogConnectionSettings.h \
-    src/widgets/mainWindow.h
+    src/widgets/mainWindow.h \
+    src/widgets/messageDialogBoxWidget.h \
+    src/widgets/tableDataWidget.h \
+    src/widgets/tableExplorerWidget.h
 
 FORMS += \
     src/widgets/dialogConnectionSettings.ui \

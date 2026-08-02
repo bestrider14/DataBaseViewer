@@ -47,6 +47,48 @@
        </widget>
       </item>
       <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="addRowBtn">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Add row</string>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::ListAdd"/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deleteRowBtn">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Delete row</string>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::ListRemove"/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Orientation::Horizontal</enum>
@@ -59,6 +101,23 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QLineEdit" name="searchEdit">
+        <property name="placeholderText">
+         <string>Search...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="searchBtn">
+        <property name="text">
+         <string>Search</string>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::EditFind"/>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -66,14 +125,8 @@
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
       </property>
-      <widget class="QTreeWidget" name="tablesTree">
-       <column>
-        <property name="text">
-         <string>Database Objects</string>
-        </property>
-       </column>
-      </widget>
-      <widget class="QTableView" name="tableContentView"/>
+      <widget class="TableExplorerWidget" name="tableTreeExplorer" native="true"/>
+      <widget class="TableDataWidget" name="tableData" native="true"/>
      </widget>
     </item>
    </layout>
@@ -90,6 +143,20 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TableDataWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/tableDataWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TableExplorerWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/tableExplorerWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
