@@ -102,21 +102,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLineEdit" name="searchEdit">
-        <property name="placeholderText">
-         <string>Search...</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="searchBtn">
-        <property name="text">
-         <string>Search</string>
-        </property>
-        <property name="icon">
-         <iconset theme="QIcon::ThemeIcon::EditFind"/>
-        </property>
-       </widget>
+       <widget class="SearchBarWidget" name="searchBarWidget" native="true"/>
       </item>
      </layout>
     </item>
@@ -154,6 +140,12 @@
    <class>TableExplorerWidget</class>
    <extends>QWidget</extends>
    <header>widgets/tableExplorerWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SearchBarWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/searchbarwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

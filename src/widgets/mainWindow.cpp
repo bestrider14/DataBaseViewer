@@ -25,7 +25,6 @@ MainWindow::~MainWindow()
     connect(m_databaseConnection.get(), &DatabaseConnection::tablesListUpdated, ui->tableTreeExplorer, &TableExplorerWidget::setTables);
     connect(m_databaseConnection.get(), &DatabaseConnection::errorMessage, m_messageBox, &MessageDialogBoxWidget::onErrorMessage);
 
-
 }
 
 void MainWindow::initUi()
@@ -46,12 +45,14 @@ void MainWindow::initUi()
     connect(ui->tableTreeExplorer, &TableExplorerWidget::tableSelected, this, &MainWindow::onTableSelected);
 
     connect(ui->tableData, &TableDataWidget::error, m_messageBox, &MessageDialogBoxWidget::onErrorMessage);
-
     connect(ui->tableData, &TableDataWidget::addingRow, this, &MainWindow::onAddingRow);
     connect(ui->tableData, &TableDataWidget::canceled, this, &MainWindow::onCancel);
-
+    connect(ui->tableData, &TableDataWidget::columnSelected, ui->searchBarWidget, &SearchBarWidget::onColumnSelected);
     connect(ui->tableData, &TableDataWidget::rowSelected, this, &MainWindow::onRowSelected);
     connect(ui->tableData, &TableDataWidget::noRowSelected, this, &MainWindow::onNoRowSelected);
+
+    connect(ui->searchBarWidget, &SearchBarWidget::lineEditIsEmpty, ui->tableData, &TableDataWidget::resetFilter);
+    connect(ui->searchBarWidget, &SearchBarWidget::searchRequested, ui->tableData, &TableDataWidget::onSearchRequested);
 
 }
 

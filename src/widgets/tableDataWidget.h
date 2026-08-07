@@ -1,11 +1,13 @@
 #ifndef TABLEDATAWIDGET_H
 #define TABLEDATAWIDGET_H
 
-#include <algorithm>
 #include <QWidget>
 #include <QTableView>
 #include <QVBoxLayout>
 #include <QSqlError>
+#include <QHeaderView>
+#include <QSortFilterProxyModel>
+#include <QRegularExpression>
 
 #include "core/customTableModel.h"
 #include "core/databaseConnection.h"
@@ -29,21 +31,26 @@ signals:
     void canceled();
     void rowSelected();
     void noRowSelected();
+    void columnSelected(const int  p_index, const QString &p_column);
 
 public slots:
     void onAddRow();
     void onDeletingRow();
     void onCancel();
+    void onSearchRequested(const int p_index, const QString &p_text);
+    void resetFilter();
 
 private slots:
     void onEditFailed(const QSqlError &p_error);
     void onClick(const QModelIndex &p_index);
+    void onHeaderClicked(const int p_index);
 
 private:
-    QTableView *m_view;
+    QTableView *m_view = new QTableView(this);
     DatabaseConnection *m_connection = nullptr;
     CustomTableModel *m_model = nullptr;
     MessageDialogBoxWidget m_messageDialog = MessageDialogBoxWidget(this);
+    QSortFilterProxyModel *m_proxyModel = new QSortFilterProxyModel(this);
 };
 
 #endif // TABLEDATAWIDGET_H

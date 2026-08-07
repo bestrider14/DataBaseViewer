@@ -3,11 +3,14 @@
 TableDataWidget::TableDataWidget(QWidget *parent) : QWidget{parent}
 {
     QVBoxLayout *boxLayout = new QVBoxLayout(this); // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
-    m_view = new QTableView(); // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
     boxLayout->addWidget(m_view);
     boxLayout->setContentsMargins(0,0,0,0);
 
     connect(m_view, &QTableView::clicked, this, &TableDataWidget::onClick);
+
+    QHeaderView *header = m_view->horizontalHeader();
+    connect(header, &QHeaderView::sectionClicked, this, &TableDataWidget::onHeaderClicked);
+
 }
 
 TableDataWidget::~TableDataWidget()
@@ -27,9 +30,12 @@ void TableDataWidget::showTable(const QString &p_tableName)
 
     // Choix de OnFieldChange justifié dans le README (section "Décisions de conception").
     m_model->setEditStrategy(QSqlTableModel::OnFieldChange);
-    m_view->setModel(m_model);
+    m_view->setSortingEnabled(true);
     m_view->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_view->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+    m_view->setModel(m_proxyModel);
+    m_proxyModel->setSourceModel(m_model);
 
     m_view->show();
 
@@ -42,6 +48,7 @@ void TableDataWidget::clear()
     m_view->clearSpans();
     m_view->setModel(nullptr);
     m_model = nullptr;
+    m_proxyModel = nullptr;
 }
 
 void TableDataWidget::onEditFailed(const QSqlError &p_error)
@@ -55,6 +62,11 @@ void TableDataWidget::onClick(const QModelIndex &p_index)
         emit rowSelected();
     else
         emit noRowSelected();
+}
+
+void TableDataWidget::onHeaderClicked(const int p_index)
+{
+    emit columnSelected(p_index ,m_model->headerData(p_index, Qt::Horizontal).toString());
 }
 
 void TableDataWidget::onAddRow()
@@ -79,7 +91,8 @@ void TableDataWidget::onDeletingRow()
     });
 
     for (const auto &index : indexList)
-        m_model->removeRows(index.row(), 1);
+        m_model->removeRows(m_proxyModel->mapToSource(index).row(), 1);
+
 
     if(!m_model->submitAll())
     {
@@ -96,4 +109,15 @@ void TableDataWidget::onCancel()
     m_model->revertAll();
     emit canceled();
     emit noRowSelected();
+}
+
+void TableDataWidget::onSearchRequested(const int p_index, const QString &p_text)
+{
+    m_proxyModel->setFilterRegularExpression(QRegularExpression::escape(p_text));
+    m_proxyModel->setFilterKeyColumn(p_index);
+}
+
+void TableDataWidget::resetFilter()
+{
+    m_proxyModel->setFilterRegularExpression("");
 }

@@ -13,6 +13,7 @@ SOURCES += \
     src/core/connectionInfo.cpp \
     src/core/customTableModel.cpp \
     src/core/databaseConnection.cpp \
+    src/widgets/searchbarwidget.cpp \
     src/widgets/dialogConnectionSettings.cpp \
     src/widgets/mainWindow.cpp \
     src/widgets/messageDialogBoxWidget.cpp \
@@ -23,6 +24,7 @@ HEADERS += \
     src/core/connectionInfo.h \
     src/core/customTableModel.h \
     src/core/databaseConnection.h \
+    src/widgets/searchbarwidget.h \
     src/widgets/dialogConnectionSettings.h \
     src/widgets/mainWindow.h \
     src/widgets/messageDialogBoxWidget.h \
