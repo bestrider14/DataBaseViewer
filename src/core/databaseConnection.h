@@ -25,23 +25,19 @@ public:
     void disconnect();
     CustomTableModel* getTableData(const QString &p_tableName) const;
 
-private:
-    void updateTablesList();
-    QString generateUuid() const;
+    inline bool isConnected() { return m_isConnected; }
+    inline QStringList getTablesList() { return m_db.tables(); };
 
 signals:
     void errorMessage(const QString &p_title, const QString &p_message);
     void statusMessage(const QString &p_message, int p_timeout = 5000) const;
     void connected(const QString &p_message = "Connected") const;
     void disconnected(const QString &p_message = "Disconnected") const;
-    void tablesListUpdated(const QStringList &p_tableList);
 
 private:
     ConnectionInfo m_connectionInfo;
     QSqlDatabase m_db;
-
-    QString m_databaseConnectionName;
-
+    bool m_isConnected = false;
 };
 
 #endif // DATABASECONNECTION_H

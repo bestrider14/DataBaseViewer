@@ -14,7 +14,7 @@
    <string>Database Viewer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1">
     <property name="spacing">
      <number>10</number>
     </property>
@@ -37,12 +37,44 @@
         <property name="text">
          <string>Connect</string>
         </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::NetworkWired"/>
+        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="connectionSettingsBtn">
+       <widget class="QComboBox" name="profilesListComboBox">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>160</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deleteProfileBtn">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
-         <string>Connection Settings</string>
+         <string>Delete profile</string>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::EditDelete"/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="addProfileBtn">
+        <property name="text">
+         <string>Add connection</string>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::ListAdd"/>
         </property>
        </widget>
       </item>
@@ -145,7 +177,7 @@
   <customwidget>
    <class>SearchBarWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/searchbarwidget.h</header>
+   <header>widgets/searchBarWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

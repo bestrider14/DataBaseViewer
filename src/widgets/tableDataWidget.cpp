@@ -2,6 +2,8 @@
 
 TableDataWidget::TableDataWidget(QWidget *parent) : QWidget{parent}
 {
+    m_messageDialog.hide();
+
     QVBoxLayout *boxLayout = new QVBoxLayout(this); // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
     boxLayout->addWidget(m_view);
     boxLayout->setContentsMargins(0,0,0,0);
@@ -10,7 +12,6 @@ TableDataWidget::TableDataWidget(QWidget *parent) : QWidget{parent}
 
     QHeaderView *header = m_view->horizontalHeader();
     connect(header, &QHeaderView::sectionClicked, this, &TableDataWidget::onHeaderClicked);
-
 }
 
 TableDataWidget::~TableDataWidget()
@@ -34,8 +35,9 @@ void TableDataWidget::showTable(const QString &p_tableName)
     m_view->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_view->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-    m_view->setModel(m_proxyModel);
     m_proxyModel->setSourceModel(m_model);
+    m_view->setModel(m_proxyModel);
+    m_view->horizontalHeader()->resizeSection(0, 60);
 
     m_view->show();
 
@@ -48,7 +50,7 @@ void TableDataWidget::clear()
     m_view->clearSpans();
     m_view->setModel(nullptr);
     m_model = nullptr;
-    m_proxyModel = nullptr;
+    m_proxyModel->setSourceModel(nullptr);
 }
 
 void TableDataWidget::onEditFailed(const QSqlError &p_error)
@@ -92,7 +94,6 @@ void TableDataWidget::onDeletingRow()
 
     for (const auto &index : indexList)
         m_model->removeRows(m_proxyModel->mapToSource(index).row(), 1);
-
 
     if(!m_model->submitAll())
     {

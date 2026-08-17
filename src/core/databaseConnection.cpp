@@ -5,8 +5,7 @@ DatabaseConnection::DatabaseConnection(const ConnectionInfo &p_connectionInfo, Q
 
 void DatabaseConnection::connect()
 {
-    m_databaseConnectionName = generateUuid();
-    m_db = QSqlDatabase::addDatabase(m_connectionInfo.getEngine(), m_databaseConnectionName);
+    m_db = QSqlDatabase::addDatabase(m_connectionInfo.getEngine(), m_connectionInfo.getProfileName());
 
     if(m_connectionInfo.getEngine() != "QSQLITE")
     {
@@ -20,22 +19,23 @@ void DatabaseConnection::connect()
 
     if (!m_db.open())
     {
+        m_isConnected = false;
         emit errorMessage("Connection failed", m_db.lastError().text());
         disconnect();
         return;
     }
 
+    m_isConnected = true;
     emit statusMessage("Server Connection Succeful");
     emit connected();
-
-    updateTablesList();
 }
 
 void DatabaseConnection::disconnect()
 {
     m_db.close();
     m_db = QSqlDatabase();
-    m_db.removeDatabase(m_databaseConnectionName);
+    m_db.removeDatabase(m_connectionInfo.getProfileName());
+    m_isConnected = false;
     emit disconnected();
 }
 
@@ -47,12 +47,6 @@ CustomTableModel* DatabaseConnection::getTableData(const QString &p_tableName) c
 
     return model;
 }
-
-void DatabaseConnection::updateTablesList()
-{
-    emit tablesListUpdated(m_db.tables());
-}
-
 
 QString DatabaseConnection::displayName(const QString &p_driver)
 {
@@ -73,9 +67,4 @@ QString DatabaseConnection::displayName(const QString &p_driver)
 QStringList DatabaseConnection::supportedDrivers()
 {
     return QSqlDatabase::drivers();
-}
-
-QString DatabaseConnection::generateUuid() const
-{
-    return QUuid::createUuid().toString(QUuid::WithoutBraces);
 }

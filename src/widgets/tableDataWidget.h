@@ -31,7 +31,7 @@ signals:
     void canceled();
     void rowSelected();
     void noRowSelected();
-    void columnSelected(const int  p_index, const QString &p_column);
+    void columnSelected(const int p_index, const QString &p_column);
 
 public slots:
     void onAddRow();

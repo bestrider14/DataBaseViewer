@@ -7,6 +7,7 @@
 
 #include "ui_mainWindow.h"
 #include "core/databaseConnection.h"
+#include "core/connectionProfileStore.h"
 
 #include "widgets/messageDialogBoxWidget.h"
 
@@ -25,14 +26,14 @@ public:
     ~MainWindow() override;
 
 private:
-    void initDatabaseConnection(const ConnectionInfo &p_connectionInfo);
     void initUi();
     void stateChanged(const QString &p_newState);
+    void setConnection(const QString &p_selectedProfile);
 
 private slots:
-    void onConnectionSettingsClicked();
+    void onAddProfileClicked();
     void onConnectClicked();
-    void onTableSelected();
+    void onTableSelected(const QString &p_tableName);
     void onRowSelected();
     void onNoRowSelected();
     void onDatabaseDisconnected();
@@ -40,12 +41,18 @@ private slots:
     void onAddingRow();
     void receivedStatus(const QString &p_message, int p_timeout = 0);
     void onCancel();
+    void onDeleteProfileClicked();
+    void onComboBoxChanged(int p_index);
+    void onProfileSaved(const QString &p_profileName, const QString &p_uuid);
+    void onProfileLoaded(const QString &p_uuid, const ConnectionInfo &p_connectionInfo);
+    void onProfileErased(const QString &p_uuid);
 
 private:
     Ui::MainWindow *ui;
-    std::unique_ptr<DatabaseConnection> m_databaseConnection;
-    bool m_isConnected = false;
+    std::unordered_map<QString, std::unique_ptr<DatabaseConnection>> m_databaseConnections;
+    std::unordered_map<QString, QString> m_tableSelectedList;
     QLabel *m_state = new QLabel("Disconnected");
     MessageDialogBoxWidget *m_messageBox = new MessageDialogBoxWidget(this);
+    ConnectionProfileStore *m_profiles = new ConnectionProfileStore(this);
 };
 #endif // MAINWINDOW_H

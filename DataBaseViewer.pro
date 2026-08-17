@@ -7,13 +7,17 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 INCLUDEPATH += $$PWD/src
-a
+
+include($$PWD/vendors/qtkeychain/qtkeychain.pri)
+
 SOURCES += \
     main.cpp \
+    src/core/connectionProfileStore.cpp \
     src/core/connectionInfo.cpp \
     src/core/customTableModel.cpp \
     src/core/databaseConnection.cpp \
-    src/widgets/searchbarwidget.cpp \
+    src/core/passwordManager.cpp \
+    src/widgets/searchBarWidget.cpp \
     src/widgets/dialogConnectionSettings.cpp \
     src/widgets/mainWindow.cpp \
     src/widgets/messageDialogBoxWidget.cpp \
@@ -21,10 +25,12 @@ SOURCES += \
     src/widgets/tableExplorerWidget.cpp
 
 HEADERS += \
+    src/core/connectionProfileStore.h \
     src/core/connectionInfo.h \
     src/core/customTableModel.h \
     src/core/databaseConnection.h \
-    src/widgets/searchbarwidget.h \
+    src/core/passwordManager.h \
+    src/widgets/searchBarWidget.h \
     src/widgets/dialogConnectionSettings.h \
     src/widgets/mainWindow.h \
     src/widgets/messageDialogBoxWidget.h \

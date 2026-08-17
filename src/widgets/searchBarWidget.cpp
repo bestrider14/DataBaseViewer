@@ -1,4 +1,4 @@
-#include "searchbarwidget.h"
+#include "searchBarWidget.h"
 
 SearchBarWidget::SearchBarWidget(QWidget *parent) : QWidget{parent}
 {
@@ -9,6 +9,7 @@ SearchBarWidget::SearchBarWidget(QWidget *parent) : QWidget{parent}
     boxLayout->addWidget(m_searchBtn);
     boxLayout->addWidget(m_searchBar);
     boxLayout->setContentsMargins(0,0,0,0);
+
 
     connect(m_searchBtn, &QPushButton::clicked, this, &SearchBarWidget::onSearchBtnClicked);
     connect(m_searchBar, &QLineEdit::textChanged, this, &SearchBarWidget::onTextChanged);
