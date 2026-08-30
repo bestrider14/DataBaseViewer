@@ -30,7 +30,6 @@ public:
 
 signals:
     void errorMessage(const QString &p_title, const QString &p_message);
-    void connected();
     void disconnected();
     void failedConnection();
     void successfullConnection(const QString &p_profileName, const QString &p_uuid);

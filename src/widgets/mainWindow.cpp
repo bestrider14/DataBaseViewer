@@ -170,14 +170,10 @@ void MainWindow::onFailedConnection()
 {
     auto *session = qobject_cast<DatabaseSessionWidget*>(sender());
 
-    auto tab = ui->tabWidget->widget(ui->tabWidget->indexOf(session));
+    if(auto tab = ui->tabWidget->widget(ui->tabWidget->indexOf(session)))
+        tab->close();
 
     session->deleteLater();
-
-    if(tab == nullptr)
-        return;
-
-    tab->close();
 }
 
 void MainWindow::onSuccessfullConnection(const QString &p_profileName, const QString &p_uuid)

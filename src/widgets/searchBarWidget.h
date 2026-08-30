@@ -13,7 +13,7 @@ class SearchBarWidget : public QWidget
 public:
     explicit SearchBarWidget(QWidget *p_parent = nullptr);
 
-    void reset();;
+    void reset();
 
 signals:
     void searchRequested(const int p_index, const QString &p_text);

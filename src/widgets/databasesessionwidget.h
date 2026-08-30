@@ -35,7 +35,7 @@ public slots:
     inline void onResetFilter() { m_data->onResetFilter(); };
     inline void onCancel() {m_data->onCancel(); };
     inline void onFailedConnection() { emit failedConnection(); };
-    void onColumnSelected(const int p_index, const QString &p_column);;
+    void onColumnSelected(const int p_index, const QString &p_column);
     void onSuccessfullConnection(const QString &p_profileName, const QString &p_uuid);
 
 signals:

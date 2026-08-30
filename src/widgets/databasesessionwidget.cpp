@@ -20,7 +20,7 @@ DatabaseSessionWidget::DatabaseSessionWidget(const ConnectionInfo &p_connectionI
     connect(m_databaseConnection, &DatabaseConnection::successfullConnection, this, &DatabaseSessionWidget::onSuccessfullConnection);
     connect(m_databaseConnection, &DatabaseConnection::errorMessage, this, [this](const QString &p_title, const QString &p_message){ emit errorMessage(p_title, p_message); });
     connect(m_data, &TableDataWidget::errorMessage, this, [this](const QString &p_title, const QString &p_message){ emit errorMessage(p_title, p_message); });
-    connect(m_data, &TableDataWidget::columnSelected, this, [this](const int p_index, const QString &p_column) {emit onColumnSelected(p_index, p_column); });
+    connect(m_data, &TableDataWidget::columnSelected, this, &DatabaseSessionWidget::onColumnSelected);
 
     m_data->setConnection(m_databaseConnection);
 }
