@@ -14,7 +14,7 @@
    <string>Database Viewer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
     <property name="spacing">
      <number>10</number>
     </property>
@@ -139,12 +139,16 @@
      </layout>
     </item>
     <item>
-     <widget class="QSplitter" name="splitter">
-      <property name="orientation">
-       <enum>Qt::Orientation::Horizontal</enum>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="enabled">
+       <bool>true</bool>
       </property>
-      <widget class="TableExplorerWidget" name="tableTreeExplorer" native="true"/>
-      <widget class="TableDataWidget" name="tableData" native="true"/>
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+      <property name="usesScrollButtons">
+       <bool>false</bool>
+      </property>
      </widget>
     </item>
    </layout>
@@ -162,18 +166,6 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>TableDataWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/tableDataWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>TableExplorerWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/tableExplorerWidget.h</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>SearchBarWidget</class>
    <extends>QWidget</extends>

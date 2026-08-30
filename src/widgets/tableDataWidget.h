@@ -8,10 +8,11 @@
 #include <QHeaderView>
 #include <QSortFilterProxyModel>
 #include <QRegularExpression>
+#include <QMessageBox>
 
 #include "core/customTableModel.h"
 #include "core/databaseConnection.h"
-#include "widgets/messageDialogBoxWidget.h"
+
 
 class TableDataWidget : public QWidget
 {
@@ -25,7 +26,7 @@ public:
     void clear();
 
 signals:
-    void error(const QString &p_title, const QString &p_message);
+    void errorMessage(const QString &p_title, const QString &p_message);
     void addingRow();
     void submited();
     void canceled();
@@ -35,10 +36,10 @@ signals:
 
 public slots:
     void onAddRow();
-    void onDeletingRow();
+    void onDeleteRow();
     void onCancel();
     void onSearchRequested(const int p_index, const QString &p_text);
-    void resetFilter();
+    void onResetFilter();
 
 private slots:
     void onEditFailed(const QSqlError &p_error);
@@ -49,7 +50,6 @@ private:
     QTableView *m_view = new QTableView(this);
     DatabaseConnection *m_connection = nullptr;
     CustomTableModel *m_model = nullptr;
-    MessageDialogBoxWidget m_messageDialog = MessageDialogBoxWidget(this);
     QSortFilterProxyModel *m_proxyModel = new QSortFilterProxyModel(this);
 };
 

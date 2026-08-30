@@ -13,6 +13,7 @@ public:
     explicit TableExplorerWidget(QWidget *parent = nullptr);
 
     void setTables(const QStringList &p_tableList);
+    bool isTableSelected();
     void clear();
 
 signals:

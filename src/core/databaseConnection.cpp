@@ -5,7 +5,7 @@ DatabaseConnection::DatabaseConnection(const ConnectionInfo &p_connectionInfo, Q
 
 void DatabaseConnection::connect()
 {
-    m_db = QSqlDatabase::addDatabase(m_connectionInfo.getEngine(), m_connectionInfo.getProfileName());
+    m_db = QSqlDatabase::addDatabase(m_connectionInfo.getEngine(), m_connectionInfo.getUuid());
 
     if(m_connectionInfo.getEngine() != "QSQLITE")
     {
@@ -21,20 +21,20 @@ void DatabaseConnection::connect()
     {
         m_isConnected = false;
         emit errorMessage("Connection failed", m_db.lastError().text());
-        disconnect();
+        emit failedConnection();
         return;
     }
 
     m_isConnected = true;
-    emit statusMessage("Server Connection Succeful");
     emit connected();
+    emit successfullConnection(m_connectionInfo.getProfileName(), m_connectionInfo.getUuid());
 }
 
 void DatabaseConnection::disconnect()
 {
     m_db.close();
     m_db = QSqlDatabase();
-    m_db.removeDatabase(m_connectionInfo.getProfileName());
+    m_db.removeDatabase(m_connectionInfo.getUuid());
     m_isConnected = false;
     emit disconnected();
 }

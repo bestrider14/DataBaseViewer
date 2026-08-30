@@ -15,6 +15,12 @@ SearchBarWidget::SearchBarWidget(QWidget *parent) : QWidget{parent}
     connect(m_searchBar, &QLineEdit::textChanged, this, &SearchBarWidget::onTextChanged);
 }
 
+void SearchBarWidget::reset()
+{
+    m_searchBar->setText("");
+    m_searchBar->setPlaceholderText("Search in ...");
+}
+
 void SearchBarWidget::onColumnSelected(const int p_index, const QString &p_name)
 {
     m_searchItemSelected.name = p_name;

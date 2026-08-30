@@ -4,28 +4,15 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-    initUi();
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
-void MainWindow::initUi()
-{
     ui->setupUi(this);
 
     m_messageBox->hide();
 
-    ui->splitter->setStretchFactor(0, 1);
-    ui->splitter->setStretchFactor(1, 3);
-
     ui->connectBtn->setEnabled(false);
 
-    statusBar()->addPermanentWidget(m_state,0);
+    //statusBar()->addPermanentWidget(m_state,0);
 
-    auto profilesInfo = m_profiles->profileNames();
+    auto profilesInfo = m_profileStore->getProfilesNameAndUuid();
 
     if(!profilesInfo.empty())
     {
@@ -35,7 +22,6 @@ void MainWindow::initUi()
         ui->connectBtn->setEnabled(true);
         ui->deleteProfileBtn->setEnabled(true);
         ui->profilesListComboBox->setEnabled(true);
-        onComboBoxChanged(ui->profilesListComboBox->currentIndex());
     }
     else
     {
@@ -43,51 +29,31 @@ void MainWindow::initUi()
         ui->profilesListComboBox->setEnabled(false);
     }
 
-    connect(ui->addProfileBtn, &QPushButton::clicked, this, &MainWindow::onAddProfileClicked);
+    onProfileSelecteChanged(ui->profilesListComboBox->currentIndex());
+
+    connect(ui->addProfileBtn,    &QPushButton::clicked, this, &MainWindow::onAddProfileClicked);
     connect(ui->deleteProfileBtn, &QPushButton::clicked, this, &MainWindow::onDeleteProfileClicked);
-    connect(ui->connectBtn, &QPushButton::clicked, this, &MainWindow::onConnectClicked);
-    connect(ui->profilesListComboBox, &QComboBox::currentIndexChanged, this, &MainWindow::onComboBoxChanged);
+    connect(ui->connectBtn,       &QPushButton::clicked, this, &MainWindow::onConnectClicked);
 
-    connect(ui->addRowBtn, &QPushButton::clicked, ui->tableData, &TableDataWidget::onAddRow);
-    connect(ui->deleteRowBtn, &QPushButton::clicked, ui->tableData, &TableDataWidget::onDeletingRow);
+    connect(m_profileStore, &ConnectionProfileStore::errorMessage, m_messageBox, &MessageDialogBoxWidget::onErrorMessage);
+    connect(m_profileStore, &ConnectionProfileStore::profileLoaded, this, &MainWindow::onProfileLoaded);
+    connect(m_profileStore, &ConnectionProfileStore::profileErased, this, &MainWindow::onProfileErased);
+    connect(m_profileStore, &ConnectionProfileStore::profileSaved, this, &MainWindow::onProfileSaved);
 
-    connect(ui->tableTreeExplorer, &TableExplorerWidget::tableSelected, ui->tableData, &TableDataWidget::showTable);
-    connect(ui->tableTreeExplorer, &TableExplorerWidget::tableSelected, this, &MainWindow::onTableSelected);
+    connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::onTabChanged);
 
-    connect(ui->tableData, &TableDataWidget::error, m_messageBox, &MessageDialogBoxWidget::onErrorMessage);
-    connect(ui->tableData, &TableDataWidget::addingRow, this, &MainWindow::onAddingRow);
-    connect(ui->tableData, &TableDataWidget::canceled, this, &MainWindow::onCancel);
-    connect(ui->tableData, &TableDataWidget::columnSelected, ui->searchBarWidget, &SearchBarWidget::onColumnSelected);
-    connect(ui->tableData, &TableDataWidget::rowSelected, this, &MainWindow::onRowSelected);
-    connect(ui->tableData, &TableDataWidget::noRowSelected, this, &MainWindow::onNoRowSelected);
+    connect(ui->profilesListComboBox, &QComboBox::currentIndexChanged, this, &MainWindow::onProfileSelecteChanged);
 
-    connect(ui->searchBarWidget, &SearchBarWidget::lineEditIsEmpty, ui->tableData, &TableDataWidget::resetFilter);
-    connect(ui->searchBarWidget, &SearchBarWidget::searchRequested, ui->tableData, &TableDataWidget::onSearchRequested);
+    connect(ui->addRowBtn,    &QPushButton::clicked, this, &MainWindow::onAddRowClicked);
+    connect(ui->deleteRowBtn, &QPushButton::clicked, this, &MainWindow::onDeleteRowClicked);
 
-    connect(m_profiles, &ConnectionProfileStore::errorMessage, m_messageBox, &MessageDialogBoxWidget::onErrorMessage);
-    connect(m_profiles, &ConnectionProfileStore::profileLoaded, this, &MainWindow::onProfileLoaded);
-    connect(m_profiles, &ConnectionProfileStore::profileErased, this, &MainWindow::onProfileErased);
-    connect(m_profiles, &ConnectionProfileStore::profileSaved, this, &MainWindow::onProfileSaved);
+    connect(ui->searchBarWidget, &SearchBarWidget::lineEditIsEmpty, this, &MainWindow::onResetFilter);
+    connect(ui->searchBarWidget, &SearchBarWidget::searchRequested, this, &MainWindow::onSearchRequested);
 }
 
-void MainWindow::stateChanged(const QString &p_newState)
+MainWindow::~MainWindow()
 {
-    m_state->setText(p_newState);
-}
-
-void MainWindow::setConnection(const QString &p_uuid)
-{
-    auto databaseConnection = m_databaseConnections[p_uuid].get();
-    ui->tableData->setConnection(databaseConnection);
-
-    if(databaseConnection->isConnected())
-    {
-        onDatabaseConnected();
-        ui->tableTreeExplorer->setTables(databaseConnection->getTablesList());
-        ui->tableData->showTable(m_tableSelectedList[p_uuid]);
-    }
-    else
-        onDatabaseDisconnected();
+    delete ui;
 }
 
 void MainWindow::receivedStatus(const QString &p_message, int p_timeout)
@@ -103,48 +69,7 @@ void MainWindow::onCancel()
 
 void MainWindow::onDeleteProfileClicked()
 {
-
-    /// voir pour le dernier profile pop erreur
-
-    QString uuid = ui->profilesListComboBox->currentData().toString();
-    auto iterator = m_databaseConnections.find(uuid);
-
-    if(iterator == m_databaseConnections.end())
-    {
-        m_messageBox->onErrorMessage("Error", "Error while deleting profile.");
-            return;
-    }
-
-    if(iterator->second->isConnected())
-        onConnectClicked();
-
-    m_profiles->erase(ui->profilesListComboBox->currentData().toString());
-}
-
-void MainWindow::onComboBoxChanged(int p_index)
-{
-
-    if(p_index == -1)
-        return;
-
-    QString uuid = ui->profilesListComboBox->itemData(p_index).toString();
-
-    auto iterator = m_databaseConnections.find(uuid);
-
-    if(iterator == m_databaseConnections.end())
-    {
-        m_profiles->load(uuid);
-        ui->connectBtn->setText("Loading...");
-        ui->connectBtn->setEnabled(false);
-        ui->profilesListComboBox->setEnabled(false);
-        ui->deleteProfileBtn->setEnabled(false);
-        return;
-    }
-    else
-    {
-        setConnection(uuid);
-        return;
-    }
+    m_profileStore->erase(ui->profilesListComboBox->currentData().toString());
 }
 
 void MainWindow::onProfileSaved(const QString &p_profileName, const QString &p_uuid)
@@ -153,26 +78,21 @@ void MainWindow::onProfileSaved(const QString &p_profileName, const QString &p_u
     ui->profilesListComboBox->setCurrentIndex(ui->profilesListComboBox->count()-1);
     ui->profilesListComboBox->setEnabled(true);
     ui->deleteProfileBtn->setEnabled(true);
+    ui->connectBtn->setEnabled(true);
 }
 
-void MainWindow::onProfileLoaded(const QString &p_uuid, const ConnectionInfo &p_connectionInfo)
+void MainWindow::onProfileLoaded(const ConnectionInfo &p_connectionInfo)
 {
-    if(p_uuid != ui->profilesListComboBox->currentData().toString())
-    {
-        m_messageBox->onErrorMessage("Error", "An error occur while loading the profile.");
-        return;
-    }
+    auto *session = new DatabaseSessionWidget(p_connectionInfo, this);
 
-    m_databaseConnections.insert({p_uuid , std::make_unique<DatabaseConnection>(p_connectionInfo)});
-    setConnection(p_uuid);
-    ui->deleteProfileBtn->setEnabled(true);
-    ui->profilesListComboBox->setEnabled(true);
+    connect(session, &DatabaseSessionWidget::columnSelected, ui->searchBarWidget, &SearchBarWidget::onColumnSelected);
+    connect(session, &DatabaseSessionWidget::errorMessage, m_messageBox, &MessageDialogBoxWidget::onErrorMessage);
+    connect(session, &DatabaseSessionWidget::connectionStateChanged, this, &MainWindow::onConnectionStateChange);
+    connect(session, &DatabaseSessionWidget::tableSelected, this, &MainWindow::onTableSelected);
+    connect(session, &DatabaseSessionWidget::failedConnection, this, &MainWindow::onFailedConnection);
+    connect(session, &DatabaseSessionWidget::successfullConnection, this, &MainWindow::onSuccessfullConnection);
 
-    auto databaseConnection = m_databaseConnections[p_uuid].get();
-    connect(databaseConnection, &DatabaseConnection::statusMessage, this, &MainWindow::receivedStatus);
-    connect(databaseConnection, &DatabaseConnection::connected, this, &MainWindow::onDatabaseConnected);
-    connect(databaseConnection, &DatabaseConnection::disconnected, this, &MainWindow::onDatabaseDisconnected);
-    connect(databaseConnection, &DatabaseConnection::errorMessage, m_messageBox, &MessageDialogBoxWidget::onErrorMessage);
+    session->connectDatabase();
 }
 
 void MainWindow::onProfileErased(const QString &p_uuid)
@@ -185,10 +105,7 @@ void MainWindow::onProfileErased(const QString &p_uuid)
 
     ui->profilesListComboBox->removeItem(ui->profilesListComboBox->currentIndex());
 
-    m_databaseConnections.erase(p_uuid);
-    m_tableSelectedList.erase(p_uuid);
-
-    if(m_profiles->profileNames().empty())
+    if(m_profileStore->getProfilesNameAndUuid().empty())
     {
         ui->profilesListComboBox->setPlaceholderText("Empty");
         ui->profilesListComboBox->setEnabled(false);
@@ -197,77 +114,155 @@ void MainWindow::onProfileErased(const QString &p_uuid)
     }
 }
 
+void MainWindow::onConnectionStateChange()
+{
+    auto *session = qobject_cast<DatabaseSessionWidget*>(sender());
+
+    if(session == nullptr)
+        return;
+
+    if(!session->isConnected())
+    {
+        auto tab = ui->tabWidget->widget(ui->tabWidget->indexOf(session));
+        tab->close();
+        session->deleteLater();
+    }
+
+    updateUi(session);
+}
+
+void MainWindow::onTabChanged()
+{
+    auto *session = currentSession();
+
+    auto uuid = ui->tabWidget->tabBar()->tabData(ui->tabWidget->currentIndex()).toString();
+    ui->profilesListComboBox->setCurrentIndex(ui->profilesListComboBox->findData(uuid));
+
+    updateUi(session);
+}
+
+void MainWindow::onTableSelected()
+{
+    auto *session = qobject_cast<DatabaseSessionWidget*>(sender());
+
+    if(session == nullptr)
+        return;
+
+    updateUi(session);
+}
+
+void MainWindow::onProfileSelecteChanged(int p_index)
+{
+    for (int i = 0; i < ui->tabWidget->count(); ++i)
+    {
+        if (ui->tabWidget->tabBar()->tabData(i).toString() == ui->profilesListComboBox->itemData(p_index).toString())
+        {
+            ui->tabWidget->setCurrentIndex(i);
+            updateUi(currentSession());
+            return;
+        }
+    }
+
+    updateUi(nullptr);
+}
+
+void MainWindow::onFailedConnection()
+{
+    auto *session = qobject_cast<DatabaseSessionWidget*>(sender());
+
+    auto tab = ui->tabWidget->widget(ui->tabWidget->indexOf(session));
+
+    session->deleteLater();
+
+    if(tab == nullptr)
+        return;
+
+    tab->close();
+}
+
+void MainWindow::onSuccessfullConnection(const QString &p_profileName, const QString &p_uuid)
+{
+    auto *session = qobject_cast<DatabaseSessionWidget*>(sender());
+    auto currentIndex = ui->tabWidget->addTab(session, p_profileName);
+    ui->tabWidget->tabBar()->setTabData(currentIndex, p_uuid);
+    ui->tabWidget->setCurrentIndex(currentIndex);
+    onTabChanged();
+    updateUi(session);
+}
+
 void MainWindow::onAddProfileClicked()
 {
     DialogConnectionsSettings dialog(this);
 
     if (dialog.exec() == QDialog::Accepted)
-        m_profiles->save(dialog.getConnectionInfo());
+        m_profileStore->save(dialog.getConnectionInfo());
 }
 
 void MainWindow::onConnectClicked()
 {
-
-    auto databaseConnection = m_databaseConnections[ui->profilesListComboBox->currentData().toString()].get();
-
-    if(!databaseConnection->isConnected())
+    if(ui->tabWidget->tabBar()->tabData(ui->tabWidget->currentIndex()).toString() != ui->profilesListComboBox->itemData(ui->profilesListComboBox->currentIndex()).toString())
     {
-        databaseConnection->connect();
-        ui->tableTreeExplorer->setTables(databaseConnection->getTablesList());
+        m_profileStore->load(ui->profilesListComboBox->currentData().toString());
+        return;
     }
-    else
+
+    auto *session = currentSession();
+    if(session->isConnected())
+        session->disconnectDatabase();
+}
+
+void MainWindow::onAddRowClicked()
+{
+    if (auto *session = currentSession())
+        session->onAddRow();
+}
+
+void MainWindow::onDeleteRowClicked()
+{
+    if (auto *session = currentSession())
+        session->onDeleteRow();
+}
+
+void MainWindow::onResetFilter()
+{
+    if (auto *session = currentSession())
+        session->onResetFilter();
+}
+
+void MainWindow::onSearchRequested(const int p_index, const QString &p_text)
+{
+    if (auto *session = currentSession())
+        session->onSearchRequested(p_index, p_text);
+}
+
+// Private ----------------------------------------------------
+void MainWindow::updateUi(DatabaseSessionWidget *p_session)
+{
+    if (p_session == nullptr)
     {
-        databaseConnection->disconnect();
-        disconnect(databaseConnection, &DatabaseConnection::statusMessage, this, &MainWindow::receivedStatus);
-        disconnect(databaseConnection, &DatabaseConnection::connected, this, &MainWindow::onDatabaseConnected);
-        disconnect(databaseConnection, &DatabaseConnection::disconnected, this, &MainWindow::onDatabaseDisconnected);
-        disconnect(databaseConnection, &DatabaseConnection::errorMessage, m_messageBox, &MessageDialogBoxWidget::onErrorMessage);
+        ui->connectBtn->setText("Connect");
+        ui->addRowBtn->setEnabled(false);
+        ui->deleteRowBtn->setEnabled(false);
+        ui->searchBarWidget->reset();
+        return;
     }
+
+    if (p_session != ui->tabWidget->currentWidget())
+        return;
+
+    ui->connectBtn->setText(p_session->isConnected() ? "Disconnect" : "Connect");
+
+    bool isTableSelected = p_session->isTableSelected();
+
+    ui->addRowBtn->setEnabled(isTableSelected);
+    ui->deleteRowBtn->setEnabled(isTableSelected);
+
+    auto columnSelected = p_session->getColumnSelected();
+
+    ui->searchBarWidget->onColumnSelected(columnSelected.index, columnSelected.name);
 }
 
-void MainWindow::onTableSelected(const QString &p_tableName)
+DatabaseSessionWidget *MainWindow::currentSession() const
 {
-    ui->addRowBtn->setEnabled(true);
-
-    QString selectedProfile = ui->profilesListComboBox->currentData().toString();
-
-    m_tableSelectedList[selectedProfile] = p_tableName;
+    return qobject_cast<DatabaseSessionWidget*>(ui->tabWidget->currentWidget());
 }
-
-void MainWindow::onRowSelected()
-{
-    ui->deleteRowBtn->setEnabled(true);        
-}
-
-void MainWindow::onNoRowSelected()
-{
-    ui->deleteRowBtn->setEnabled(false);
-}
-
-void MainWindow::onDatabaseDisconnected()
-{
-    ui->tableData->clear();
-    ui->tableTreeExplorer->clear();
-    ui->connectBtn->setText("Connect");
-    ui->addRowBtn->setEnabled(false);
-    ui->deleteRowBtn->setEnabled(false);
-    ui->connectBtn->setEnabled(true);
-
-    stateChanged("Disconnected");
-}
-
-void MainWindow::onDatabaseConnected()
-{
-    ui->connectBtn->setText("Disconnect");
-    stateChanged("Connected");
-}
-
-void MainWindow::onAddingRow()
-{
-    ui->addRowBtn->setEnabled(false);
-    ui->deleteRowBtn->setText("Cancel");
-
-    disconnect(ui->deleteRowBtn, &QPushButton::clicked, ui->tableData, &TableDataWidget::onDeletingRow);
-    connect(ui->deleteRowBtn, &QPushButton::clicked, ui->tableData, &TableDataWidget::onCancel);
-}
-

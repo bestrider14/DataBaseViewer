@@ -18,26 +18,27 @@ class DatabaseConnection : public QObject
 public:
     explicit DatabaseConnection(const ConnectionInfo &p_connectionInfo, QObject *p_parent = nullptr);
 
-    static QString displayName(const QString &p_driver);   // "QPSQL" -> "PostgreSQL"
-    static QStringList supportedDrivers();
+    static QString      displayName(const QString &p_driver);   // "QPSQL" -> "PostgreSQL"
+    static QStringList  supportedDrivers();
 
-    void connect();
-    void disconnect();
-    CustomTableModel* getTableData(const QString &p_tableName) const;
+    void                connect();
+    void                disconnect();
+    CustomTableModel*   getTableData(const QString &p_tableName) const;
 
-    inline bool isConnected() { return m_isConnected; }
-    inline QStringList getTablesList() { return m_db.tables(); };
+    inline bool               isConnected()    const { return m_isConnected; }
+    const inline QStringList  getTablesList()  const { return m_db.tables(); };
 
 signals:
     void errorMessage(const QString &p_title, const QString &p_message);
-    void statusMessage(const QString &p_message, int p_timeout = 5000) const;
-    void connected(const QString &p_message = "Connected") const;
-    void disconnected(const QString &p_message = "Disconnected") const;
+    void connected();
+    void disconnected();
+    void failedConnection();
+    void successfullConnection(const QString &p_profileName, const QString &p_uuid);
 
 private:
-    ConnectionInfo m_connectionInfo;
-    QSqlDatabase m_db;
-    bool m_isConnected = false;
+    ConnectionInfo  m_connectionInfo;
+    QSqlDatabase    m_db;
+    bool            m_isConnected = false;
 };
 
 #endif // DATABASECONNECTION_H

@@ -33,7 +33,10 @@ DialogConnectionsSettings::~DialogConnectionsSettings()
 
 const ConnectionInfo DialogConnectionsSettings::getConnectionInfo() const
 {
+    QString uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
+
     ConnectionInfo connectionInfo(
+        uuid,
         ui->profileNameEdit->text(),
         ui->engineCombo->currentData().toString(),
         ui->hostIpEdit->text(),

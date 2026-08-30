@@ -19,11 +19,10 @@ void PasswordManager::save(const QString &p_uuid, const QString &p_password)
                 if (job->error())
                 {
                     emit errorMessage("Error", "Unable to save password: " + job->errorString());
-                    job->deleteLater();
+                    emit saveFailed(p_uuid);
                     return;
                 }
                 emit saved(p_uuid);
-                job->deleteLater();
             });
 
     job->start();
@@ -44,12 +43,10 @@ void PasswordManager::load(const QString &p_uuid)
                 if (job->error())
                 {
                     emit errorMessage("Erreur:", "Unable to load password: " + job->errorString());
-                    job->deleteLater();
                     return;
                 }
 
                 emit loaded(p_uuid ,readJob->textData());
-                job->deleteLater();
             });
 
     job->start();
@@ -68,12 +65,10 @@ void PasswordManager::erase(const QString &p_uuid)
                 if (job->error())
                 {
                     emit errorMessage("Erreur:", "Unable to delete password: " + job->errorString());
-                    job->deleteLater();
                     return;
                 }
 
                 emit erased(p_uuid);
-                job->deleteLater();
             });
 
     job->start();

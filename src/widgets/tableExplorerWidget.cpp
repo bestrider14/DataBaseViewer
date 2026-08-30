@@ -21,6 +21,11 @@ void TableExplorerWidget::setTables(const QStringList &p_tableList)
     }
 }
 
+bool TableExplorerWidget::isTableSelected()
+{
+    return m_tree->currentItem() != nullptr;
+}
+
 void TableExplorerWidget::clear()
 {
     m_tree->clear();

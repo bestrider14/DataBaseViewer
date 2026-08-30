@@ -2,8 +2,6 @@
 
 TableDataWidget::TableDataWidget(QWidget *parent) : QWidget{parent}
 {
-    m_messageDialog.hide();
-
     QVBoxLayout *boxLayout = new QVBoxLayout(this); // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
     boxLayout->addWidget(m_view);
     boxLayout->setContentsMargins(0,0,0,0);
@@ -55,7 +53,7 @@ void TableDataWidget::clear()
 
 void TableDataWidget::onEditFailed(const QSqlError &p_error)
 {
-    emit error("Edit Failed", p_error.text());
+    emit errorMessage("Edit Failed", p_error.text());
 }
 
 void TableDataWidget::onClick(const QModelIndex &p_index)
@@ -76,10 +74,10 @@ void TableDataWidget::onAddRow()
     if(m_model->insertRow(m_model->rowCount()))
         emit addingRow();
     else
-        emit error("Adding a row failed", "Something wrong append");
+        emit errorMessage("Adding a row failed", "Something wrong append");
 }
 
-void TableDataWidget::onDeletingRow()
+void TableDataWidget::onDeleteRow()
 {
     auto reply = QMessageBox::question(this, "Delete confirmation", "Are you sure to delete this data", QMessageBox::Ok | QMessageBox::Cancel);
 
@@ -97,7 +95,7 @@ void TableDataWidget::onDeletingRow()
 
     if(!m_model->submitAll())
     {
-        emit error("Error on submit", m_model->lastError().text() + " All change will be reverted.");
+        emit errorMessage("Error on submit", m_model->lastError().text() + " All change will be reverted.");
         m_model->revertAll();
     }
 
@@ -118,7 +116,7 @@ void TableDataWidget::onSearchRequested(const int p_index, const QString &p_text
     m_proxyModel->setFilterKeyColumn(p_index);
 }
 
-void TableDataWidget::resetFilter()
+void TableDataWidget::onResetFilter()
 {
     m_proxyModel->setFilterRegularExpression("");
 }

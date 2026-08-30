@@ -13,6 +13,8 @@ class SearchBarWidget : public QWidget
 public:
     explicit SearchBarWidget(QWidget *p_parent = nullptr);
 
+    void reset();;
+
 signals:
     void searchRequested(const int p_index, const QString &p_text);
     void lineEditIsEmpty();
@@ -30,7 +32,7 @@ private:
 
     struct {
         QString name;
-        int index = 0;
+        int index = -1;
     } m_searchItemSelected;
 };
 

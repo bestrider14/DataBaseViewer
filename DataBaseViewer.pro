@@ -17,6 +17,7 @@ SOURCES += \
     src/core/customTableModel.cpp \
     src/core/databaseConnection.cpp \
     src/core/passwordManager.cpp \
+    src/widgets/databasesessionwidget.cpp \
     src/widgets/searchBarWidget.cpp \
     src/widgets/dialogConnectionSettings.cpp \
     src/widgets/mainWindow.cpp \
@@ -30,6 +31,7 @@ HEADERS += \
     src/core/customTableModel.h \
     src/core/databaseConnection.h \
     src/core/passwordManager.h \
+    src/widgets/databasesessionwidget.h \
     src/widgets/searchBarWidget.h \
     src/widgets/dialogConnectionSettings.h \
     src/widgets/mainWindow.h \

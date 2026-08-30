@@ -16,13 +16,13 @@ public:
     void erase(const QString &p_key);
 
 signals:
+    void saveFailed(const QString &p_uuid);
     void saved(const QString &p_uuid);
     void loaded(const QString &p_key, const QString &p_password);
     void erased(const QString &p_key);
     void errorMessage(const QString &p_title, const QString &p_message);
 
 private:
-    inline static const QString KEY_PREFIX = "password/";
 
 };
 
