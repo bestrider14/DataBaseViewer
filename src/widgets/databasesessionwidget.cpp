@@ -33,6 +33,8 @@ void DatabaseSessionWidget::connectDatabase()
 
 void DatabaseSessionWidget::disconnectDatabase()
 {
+    m_data->clear();
+    m_explorer->clear();
     m_databaseConnection->disconnect();
     emit connectionStateChanged();
 }

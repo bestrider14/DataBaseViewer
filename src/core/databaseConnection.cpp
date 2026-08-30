@@ -26,7 +26,6 @@ void DatabaseConnection::connect()
     }
 
     m_isConnected = true;
-    emit connected();
     emit successfullConnection(m_connectionInfo.getProfileName(), m_connectionInfo.getUuid());
 }
 
