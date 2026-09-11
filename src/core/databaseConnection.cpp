@@ -1,3 +1,7 @@
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QSqlQueryModel>
+
 #include "databaseConnection.h"
 
 DatabaseConnection::DatabaseConnection(const ConnectionInfo &p_connectionInfo, QObject *p_parent) : QObject(p_parent), m_connectionInfo(p_connectionInfo)
@@ -45,6 +49,53 @@ CustomTableModel* DatabaseConnection::getTableData(const QString &p_tableName) c
     model->select();
 
     return model;
+}
+
+const QMap<QString, QStringList> DatabaseConnection::getTablesList() const
+{
+    QMap<QString, QStringList> map;
+
+    auto engine = m_connectionInfo.getEngine();
+
+    if(engine == "QPSQL" || engine == "QMYSQL")
+    {
+        QSqlQuery query("SELECT table_schema, table_name, table_type FROM information_schema.tables WHERE table_type = 'BASE TABLE'", m_db);
+
+        while(query.next())
+        {
+            QString schema = query.value(0).toString();
+            QString table = query.value(1).toString();
+
+            map[schema].append(table);
+        }
+    }
+    else
+    {
+        map.insert("NO_SCHEMA", m_db.tables());
+    }
+    return map;
+}
+
+void DatabaseConnection::onExecuteRequested(const QString &p_query)
+{
+    QSqlQuery query(m_db);
+
+    if (!query.exec(p_query))
+    {
+        emit errorMessage("Error SQL", query.lastError().text());
+        return;
+    }
+
+    if(query.isSelect())
+    {
+        auto *model = new QSqlQueryModel();
+        model->setQuery(std::move(query));
+        emit selectedQueryExecuted(model);
+    }
+    else
+    {
+        emit numRowsAffected(query.numRowsAffected());
+    }
 }
 
 QString DatabaseConnection::displayName(const QString &p_driver)

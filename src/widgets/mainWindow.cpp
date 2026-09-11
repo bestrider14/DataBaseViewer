@@ -10,8 +10,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->connectBtn->setEnabled(false);
 
-    //statusBar()->addPermanentWidget(m_state,0);
-
     auto profilesInfo = m_profileStore->getProfilesNameAndUuid();
 
     if(!profilesInfo.empty())
@@ -49,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(ui->searchBarWidget, &SearchBarWidget::lineEditIsEmpty, this, &MainWindow::onResetFilter);
     connect(ui->searchBarWidget, &SearchBarWidget::searchRequested, this, &MainWindow::onSearchRequested);
+
 }
 
 MainWindow::~MainWindow()
@@ -56,7 +55,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::receivedStatus(const QString &p_message, int p_timeout)
+void MainWindow::onReceivedStatus(const QString &p_message, int p_timeout)
 {
     statusBar()->showMessage(p_message, p_timeout);
 }
@@ -91,6 +90,7 @@ void MainWindow::onProfileLoaded(const ConnectionInfo &p_connectionInfo)
     connect(session, &DatabaseSessionWidget::tableSelected, this, &MainWindow::onTableSelected);
     connect(session, &DatabaseSessionWidget::failedConnection, this, &MainWindow::onFailedConnection);
     connect(session, &DatabaseSessionWidget::successfullConnection, this, &MainWindow::onSuccessfullConnection);
+    connect(session, &DatabaseSessionWidget::sendStatus, this, &MainWindow::onReceivedStatus);
 
     session->connectDatabase();
 }
@@ -181,7 +181,7 @@ void MainWindow::onSuccessfullConnection(const QString &p_profileName, const QSt
     auto *session = qobject_cast<DatabaseSessionWidget*>(sender());
     auto currentIndex = ui->tabWidget->addTab(session, p_profileName);
     ui->tabWidget->tabBar()->setTabData(currentIndex, p_uuid);
-    ui->tabWidget->setCurrentIndex(currentIndex);
+    ui->tabWidget->setCurrentIndex(currentIndex);    
     onTabChanged();
     updateUi(session);
 }

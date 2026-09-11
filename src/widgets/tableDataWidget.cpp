@@ -22,10 +22,15 @@ void TableDataWidget::setConnection(DatabaseConnection *p_connection)
     m_connection = p_connection;
 }
 
-void TableDataWidget::showTable(const QString &p_tableName)
+void TableDataWidget::showTable(const QString &p_SchemaName, const QString &p_tableName)
 {
     delete m_model;
-    m_model = m_connection->getTableData(p_tableName);
+
+    if(p_SchemaName == "NO_SCHEMA")
+        m_model = m_connection->getTableData(p_tableName);
+    else
+        m_model = m_connection->getTableData(p_SchemaName + "." + p_tableName);
+
 
     // Choix de OnFieldChange justifié dans le README (section "Décisions de conception").
     m_model->setEditStrategy(QSqlTableModel::OnFieldChange);

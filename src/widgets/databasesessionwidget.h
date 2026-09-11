@@ -7,6 +7,7 @@
 #include "core/databaseConnection.h"
 #include "widgets/tableDataWidget.h"
 #include "widgets/tableExplorerWidget.h"
+#include "widgets/sqlConsoleWidget.h"
 
 class DatabaseSessionWidget : public QWidget
 {
@@ -27,7 +28,6 @@ public:
     inline bool isTableSelected() const { return m_explorer->isTableSelected(); };
     inline ColumnInfos  getColumnSelected() const { return m_columnSelected; };
 
-
 public slots:
     inline void onAddRow() { m_data->onAddRow(); };
     inline void onDeleteRow() {m_data->onDeleteRow(); };
@@ -35,6 +35,7 @@ public slots:
     inline void onResetFilter() { m_data->onResetFilter(); };
     inline void onCancel() {m_data->onCancel(); };
     inline void onFailedConnection() { emit failedConnection(); };
+    void onNumRowsAffected(int p_num);
     void onColumnSelected(const int p_index, const QString &p_column);
     void onSuccessfullConnection(const QString &p_profileName, const QString &p_uuid);
 
@@ -45,6 +46,7 @@ signals:
     void successfullConnection(const QString &p_profileName, const QString &p_uuid);
     void errorMessage(const QString &p_title, const QString &p_message);
     void columnSelected(const int p_index, const QString &p_column);
+    void sendStatus(const QString &p_message, int p_timeout = 3000);
 
 private slots:
     void onDisconnected();
@@ -53,6 +55,7 @@ private:
     DatabaseConnection  *m_databaseConnection = nullptr;
     TableExplorerWidget *m_explorer = new TableExplorerWidget;
     TableDataWidget     *m_data = new TableDataWidget;
+    SqlConsoleWidget    *m_sqlConsole = new SqlConsoleWidget;
     ColumnInfos          m_columnSelected;
 };
 #endif // DATABASESESSIONWIDGET_H

@@ -22,7 +22,7 @@ public:
     ~TableDataWidget();
 
     void setConnection(DatabaseConnection *p_connection);
-    void showTable(const QString &p_tableName);
+    void showTable(const QString &p_SchemaName, const QString &p_tableName);
     void clear();
 
 signals:

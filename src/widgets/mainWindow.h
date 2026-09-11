@@ -33,7 +33,7 @@ private:
 private slots:
     void onAddProfileClicked();
     void onConnectClicked();
-    void receivedStatus(const QString &p_message, int p_timeout = 0);
+    void onReceivedStatus(const QString &p_message, int p_timeout = 500);
     void onCancel();
     void onDeleteProfileClicked();
     void onProfileSaved(const QString &p_profileName, const QString &p_uuid);

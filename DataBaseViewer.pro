@@ -22,6 +22,7 @@ SOURCES += \
     src/widgets/dialogConnectionSettings.cpp \
     src/widgets/mainWindow.cpp \
     src/widgets/messageDialogBoxWidget.cpp \
+    src/widgets/sqlConsoleWidget.cpp \
     src/widgets/tableDataWidget.cpp \
     src/widgets/tableExplorerWidget.cpp
 
@@ -36,6 +37,7 @@ HEADERS += \
     src/widgets/dialogConnectionSettings.h \
     src/widgets/mainWindow.h \
     src/widgets/messageDialogBoxWidget.h \
+    src/widgets/sqlConsoleWidget.h \
     src/widgets/tableDataWidget.h \
     src/widgets/tableExplorerWidget.h
 

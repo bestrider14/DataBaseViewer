@@ -2,6 +2,7 @@
 #define DATABASECONNECTION_H
 
 #include <QString>
+#include <QMap>
 #include <QSqlDatabase>
 #include <QHash>
 #include <QSqlError>
@@ -23,16 +24,22 @@ public:
 
     void                connect();
     void                disconnect();
-    CustomTableModel*   getTableData(const QString &p_tableName) const;
 
-    inline bool               isConnected()    const { return m_isConnected; }
-    const inline QStringList  getTablesList()  const { return m_db.tables(); };
+    CustomTableModel*                  getTableData(const QString &p_tableName) const;
+    const  QMap<QString, QStringList>  getTablesList()  const;
+
+    inline bool         isConnected()    const { return m_isConnected; }
+
+public slots:
+    void onExecuteRequested(const QString &p_query);
 
 signals:
     void errorMessage(const QString &p_title, const QString &p_message);
     void disconnected();
     void failedConnection();
     void successfullConnection(const QString &p_profileName, const QString &p_uuid);
+    void selectedQueryExecuted(QSqlQueryModel *p_model);
+    void numRowsAffected(int p_numOfRowsAffected);
 
 private:
     ConnectionInfo  m_connectionInfo;
