@@ -7,29 +7,22 @@ DialogConnectionsSettings::DialogConnectionsSettings(QWidget *parent)
     , ui(new Ui::DialogConnectionsSettings)
 {
     ui->setupUi(this);
-
-    setOkButtonEnable(false);
+    m_saveButton = ui->buttonBox->button(QDialogButtonBox::Save);
+    m_saveButton->setEnabled(false);
 
     for (const QString &driver : DatabaseConnection::supportedDrivers())
         ui->engineCombo->addItem(DatabaseConnection::displayName(driver),driver);
-
-    //DEV
-    ui->engineCombo->setCurrentIndex(5);
-    ui->hostIpEdit->setText("localhost");
-    ui->hostPortEdit->setText("5434");
-    ui->databaseEdit->setText("nextbay_dev");
-    ui->usernameEdit->setText("nextbay");
-    ui->passwordEdit->setText("nextbay");
 
     onEngineComboChanged();
 
     connect(ui->engineCombo, &QComboBox::currentIndexChanged, this, &DialogConnectionsSettings::onEngineComboChanged);
 
-    connect(ui->hostIpEdit,   &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
-    connect(ui->hostPortEdit, &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
-    connect(ui->databaseEdit, &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
-    connect(ui->usernameEdit, &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
-    connect(ui->passwordEdit, &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
+    connect(ui->profileNameEdit, &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
+    connect(ui->hostIpEdit,      &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
+    connect(ui->hostPortEdit,    &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
+    connect(ui->databaseEdit,    &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
+    connect(ui->usernameEdit,    &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
+    connect(ui->passwordEdit,    &QLineEdit::textEdited, this, &DialogConnectionsSettings::onEdit);
 
 }
 
@@ -40,12 +33,17 @@ DialogConnectionsSettings::~DialogConnectionsSettings()
 
 const ConnectionInfo DialogConnectionsSettings::getConnectionInfo() const
 {
-    ConnectionInfo connectionInfo(ui->engineCombo->currentData().toString(),
-                                  ui->hostIpEdit->text(),
-                                  ui->hostPortEdit->text().toUInt(),
-                                  ui->databaseEdit->text(),
-                                  ui->usernameEdit->text(),
-                                  ui->passwordEdit->text());
+    QString uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
+
+    ConnectionInfo connectionInfo(
+        uuid,
+        ui->profileNameEdit->text(),
+        ui->engineCombo->currentData().toString(),
+        ui->hostIpEdit->text(),
+        ui->hostPortEdit->text().toUInt(),
+        ui->databaseEdit->text(),
+        ui->usernameEdit->text(),
+        ui->passwordEdit->text());
 
     return connectionInfo;
 }
@@ -72,9 +70,10 @@ void DialogConnectionsSettings::onEdit()
 {
     if( ui->databaseEdit->text().isEmpty() ||
         ui->usernameEdit->text().isEmpty() ||
-        ui->passwordEdit->text().isEmpty())
+        ui->passwordEdit->text().isEmpty() ||
+        ui->profileNameEdit->text().isEmpty())
     {
-        setOkButtonEnable(false);
+        m_saveButton->setEnabled(false);
         return;
     }
 
@@ -82,16 +81,10 @@ void DialogConnectionsSettings::onEdit()
     {
         if( ui->hostIpEdit->text().isEmpty() || ui->hostPortEdit->text().isEmpty())
         {
-            setOkButtonEnable(false);
+            m_saveButton->setEnabled(false);
             return;
         }
     }
 
-    setOkButtonEnable(true);
-}
-
-void DialogConnectionsSettings::setOkButtonEnable(bool b)
-{
-    QPushButton *okButton = ui->buttonBox->button(QDialogButtonBox::Ok);
-    okButton->setEnabled(b);
+    m_saveButton->setEnabled(true);
 }

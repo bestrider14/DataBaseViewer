@@ -5,6 +5,7 @@
 #include <QString>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QDialogButtonBox>
 
 #include "ui_dialogConnectionSettings.h"
 #include "core/connectionInfo.h"
@@ -29,8 +30,7 @@ private slots:
 
 private:
     Ui::DialogConnectionsSettings *ui;
-
-    void setOkButtonEnable(bool b);
+    QPushButton *m_saveButton = nullptr;
 };
 
 #endif // DIALOGCONNECTIONSETTINGS_H

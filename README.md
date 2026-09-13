@@ -26,6 +26,19 @@ Le détail de la feuille de route est suivi via les [issues et milestones GitHub
 
 ## Compilation
 
+Le projet dépend de [QtKeychain](https://github.com/frankosterfeld/qtkeychain) via un submodule git
+(`vendors/qtkeychain`) pour stocker les mots de passe de connexion de façon sécurisée. Cloner avec :
+
+```
+git clone --recurse-submodules <url-du-repo>
+```
+
+Si le dépôt est déjà cloné sans le submodule :
+
+```
+git submodule update --init
+```
+
 Avec Qt Creator : ouvrir `DataBaseViewer.pro` et lancer le build.
 
 En ligne de commande :

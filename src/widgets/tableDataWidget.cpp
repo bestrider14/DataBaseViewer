@@ -10,7 +10,6 @@ TableDataWidget::TableDataWidget(QWidget *parent) : QWidget{parent}
 
     QHeaderView *header = m_view->horizontalHeader();
     connect(header, &QHeaderView::sectionClicked, this, &TableDataWidget::onHeaderClicked);
-
 }
 
 TableDataWidget::~TableDataWidget()
@@ -23,10 +22,15 @@ void TableDataWidget::setConnection(DatabaseConnection *p_connection)
     m_connection = p_connection;
 }
 
-void TableDataWidget::showTable(const QString &p_tableName)
+void TableDataWidget::showTable(const QString &p_SchemaName, const QString &p_tableName)
 {
     delete m_model;
-    m_model = m_connection->getTableData(p_tableName);
+
+    if(p_SchemaName == "NO_SCHEMA")
+        m_model = m_connection->getTableData(p_tableName);
+    else
+        m_model = m_connection->getTableData(p_SchemaName + "." + p_tableName);
+
 
     // Choix de OnFieldChange justifié dans le README (section "Décisions de conception").
     m_model->setEditStrategy(QSqlTableModel::OnFieldChange);
@@ -34,8 +38,9 @@ void TableDataWidget::showTable(const QString &p_tableName)
     m_view->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_view->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-    m_view->setModel(m_proxyModel);
     m_proxyModel->setSourceModel(m_model);
+    m_view->setModel(m_proxyModel);
+    m_view->horizontalHeader()->resizeSection(0, 60);
 
     m_view->show();
 
@@ -48,12 +53,12 @@ void TableDataWidget::clear()
     m_view->clearSpans();
     m_view->setModel(nullptr);
     m_model = nullptr;
-    m_proxyModel = nullptr;
+    m_proxyModel->setSourceModel(nullptr);
 }
 
 void TableDataWidget::onEditFailed(const QSqlError &p_error)
 {
-    emit error("Edit Failed", p_error.text());
+    emit errorMessage("Edit Failed", p_error.text());
 }
 
 void TableDataWidget::onClick(const QModelIndex &p_index)
@@ -74,10 +79,10 @@ void TableDataWidget::onAddRow()
     if(m_model->insertRow(m_model->rowCount()))
         emit addingRow();
     else
-        emit error("Adding a row failed", "Something wrong append");
+        emit errorMessage("Adding a row failed", "Something wrong append");
 }
 
-void TableDataWidget::onDeletingRow()
+void TableDataWidget::onDeleteRow()
 {
     auto reply = QMessageBox::question(this, "Delete confirmation", "Are you sure to delete this data", QMessageBox::Ok | QMessageBox::Cancel);
 
@@ -93,10 +98,9 @@ void TableDataWidget::onDeletingRow()
     for (const auto &index : indexList)
         m_model->removeRows(m_proxyModel->mapToSource(index).row(), 1);
 
-
     if(!m_model->submitAll())
     {
-        emit error("Error on submit", m_model->lastError().text() + " All change will be reverted.");
+        emit errorMessage("Error on submit", m_model->lastError().text() + " All change will be reverted.");
         m_model->revertAll();
     }
 
@@ -117,7 +121,7 @@ void TableDataWidget::onSearchRequested(const int p_index, const QString &p_text
     m_proxyModel->setFilterKeyColumn(p_index);
 }
 
-void TableDataWidget::resetFilter()
+void TableDataWidget::onResetFilter()
 {
     m_proxyModel->setFilterRegularExpression("");
 }

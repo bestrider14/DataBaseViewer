@@ -14,7 +14,7 @@
    <string>Database Viewer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
     <property name="spacing">
      <number>10</number>
     </property>
@@ -37,12 +37,44 @@
         <property name="text">
          <string>Connect</string>
         </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::NetworkWired"/>
+        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="connectionSettingsBtn">
+       <widget class="QComboBox" name="profilesListComboBox">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>160</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deleteProfileBtn">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
-         <string>Connection Settings</string>
+         <string>Delete profile</string>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::EditDelete"/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="addProfileBtn">
+        <property name="text">
+         <string>Add connection</string>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::ListAdd"/>
         </property>
        </widget>
       </item>
@@ -107,12 +139,16 @@
      </layout>
     </item>
     <item>
-     <widget class="QSplitter" name="splitter">
-      <property name="orientation">
-       <enum>Qt::Orientation::Horizontal</enum>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="enabled">
+       <bool>true</bool>
       </property>
-      <widget class="TableExplorerWidget" name="tableTreeExplorer" native="true"/>
-      <widget class="TableDataWidget" name="tableData" native="true"/>
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+      <property name="usesScrollButtons">
+       <bool>false</bool>
+      </property>
      </widget>
     </item>
    </layout>
@@ -131,21 +167,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TableDataWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/tableDataWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>TableExplorerWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/tableExplorerWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>SearchBarWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/searchbarwidget.h</header>
+   <header>widgets/searchBarWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

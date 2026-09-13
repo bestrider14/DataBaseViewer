@@ -6,9 +6,11 @@
 #include <QLabel>
 
 #include "ui_mainWindow.h"
-#include "core/databaseConnection.h"
+#include "core/connectionProfileStore.h"
 
 #include "widgets/messageDialogBoxWidget.h"
+#include "widgets/databasesessionwidget.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,27 +27,33 @@ public:
     ~MainWindow() override;
 
 private:
-    void initDatabaseConnection(const ConnectionInfo &p_connectionInfo);
-    void initUi();
-    void stateChanged(const QString &p_newState);
+    void updateUi(DatabaseSessionWidget *p_session);
+    DatabaseSessionWidget *currentSession() const;
 
 private slots:
-    void onConnectionSettingsClicked();
+    void onAddProfileClicked();
     void onConnectClicked();
-    void onTableSelected();
-    void onRowSelected();
-    void onNoRowSelected();
-    void onDatabaseDisconnected();
-    void onDatabaseConnected();
-    void onAddingRow();
-    void receivedStatus(const QString &p_message, int p_timeout = 0);
+    void onReceivedStatus(const QString &p_message, int p_timeout = 500);
     void onCancel();
+    void onDeleteProfileClicked();
+    void onProfileSaved(const QString &p_profileName, const QString &p_uuid);
+    void onProfileLoaded(const ConnectionInfo &p_connectionInfo);
+    void onProfileErased(const QString &p_uuid);
+    void onConnectionStateChange();
+    void onTabChanged();
+    void onTableSelected();
+    void onProfileSelecteChanged(int p_index);
+    void onFailedConnection();
+    void onSuccessfullConnection(const QString &p_profileName, const QString &p_uuid);
+
+    void onAddRowClicked();
+    void onDeleteRowClicked();
+    void onResetFilter();
+    void onSearchRequested(const int p_index, const QString &p_text);
 
 private:
     Ui::MainWindow *ui;
-    std::unique_ptr<DatabaseConnection> m_databaseConnection;
-    bool m_isConnected = false;
-    QLabel *m_state = new QLabel("Disconnected");
     MessageDialogBoxWidget *m_messageBox = new MessageDialogBoxWidget(this);
+    ConnectionProfileStore *m_profileStore = new ConnectionProfileStore(this);
 };
 #endif // MAINWINDOW_H

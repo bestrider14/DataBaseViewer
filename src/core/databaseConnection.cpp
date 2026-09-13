@@ -1,3 +1,7 @@
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QSqlQueryModel>
+
 #include "databaseConnection.h"
 
 DatabaseConnection::DatabaseConnection(const ConnectionInfo &p_connectionInfo, QObject *p_parent) : QObject(p_parent), m_connectionInfo(p_connectionInfo)
@@ -5,8 +9,7 @@ DatabaseConnection::DatabaseConnection(const ConnectionInfo &p_connectionInfo, Q
 
 void DatabaseConnection::connect()
 {
-    m_databaseConnectionName = generateUuid();
-    m_db = QSqlDatabase::addDatabase(m_connectionInfo.getEngine(), m_databaseConnectionName);
+    m_db = QSqlDatabase::addDatabase(m_connectionInfo.getEngine(), m_connectionInfo.getUuid());
 
     if(m_connectionInfo.getEngine() != "QSQLITE")
     {
@@ -20,22 +23,22 @@ void DatabaseConnection::connect()
 
     if (!m_db.open())
     {
+        m_isConnected = false;
         emit errorMessage("Connection failed", m_db.lastError().text());
-        disconnect();
+        emit failedConnection();
         return;
     }
 
-    emit statusMessage("Server Connection Succeful");
-    emit connected();
-
-    updateTablesList();
+    m_isConnected = true;
+    emit successfullConnection(m_connectionInfo.getProfileName(), m_connectionInfo.getUuid());
 }
 
 void DatabaseConnection::disconnect()
 {
     m_db.close();
     m_db = QSqlDatabase();
-    m_db.removeDatabase(m_databaseConnectionName);
+    m_db.removeDatabase(m_connectionInfo.getUuid());
+    m_isConnected = false;
     emit disconnected();
 }
 
@@ -48,11 +51,52 @@ CustomTableModel* DatabaseConnection::getTableData(const QString &p_tableName) c
     return model;
 }
 
-void DatabaseConnection::updateTablesList()
+const QMap<QString, QStringList> DatabaseConnection::getTablesList() const
 {
-    emit tablesListUpdated(m_db.tables());
+    QMap<QString, QStringList> map;
+
+    auto engine = m_connectionInfo.getEngine();
+
+    if(engine == "QPSQL" || engine == "QMYSQL")
+    {
+        QSqlQuery query("SELECT table_schema, table_name, table_type FROM information_schema.tables WHERE table_type = 'BASE TABLE'", m_db);
+
+        while(query.next())
+        {
+            QString schema = query.value(0).toString();
+            QString table = query.value(1).toString();
+
+            map[schema].append(table);
+        }
+    }
+    else
+    {
+        map.insert("NO_SCHEMA", m_db.tables());
+    }
+    return map;
 }
 
+void DatabaseConnection::onExecuteRequested(const QString &p_query)
+{
+    QSqlQuery query(m_db);
+
+    if (!query.exec(p_query))
+    {
+        emit errorMessage("Error SQL", query.lastError().text());
+        return;
+    }
+
+    if(query.isSelect())
+    {
+        auto *model = new QSqlQueryModel();
+        model->setQuery(std::move(query));
+        emit selectedQueryExecuted(model);
+    }
+    else
+    {
+        emit numRowsAffected(query.numRowsAffected());
+    }
+}
 
 QString DatabaseConnection::displayName(const QString &p_driver)
 {
@@ -73,9 +117,4 @@ QString DatabaseConnection::displayName(const QString &p_driver)
 QStringList DatabaseConnection::supportedDrivers()
 {
     return QSqlDatabase::drivers();
-}
-
-QString DatabaseConnection::generateUuid() const
-{
-    return QUuid::createUuid().toString(QUuid::WithoutBraces);
 }
